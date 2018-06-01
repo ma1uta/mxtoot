@@ -7,7 +7,7 @@
 * [Certificate](#Certificate)
 * [Configuration](#Configuration)
 * [Commands](#Commands)
-* [Compile source code](#Compile source code)
+* [Compile](#Compile)
 
 ## Usage
 
@@ -199,7 +199,7 @@ Set or show post, reply or boost message templates.
 
 Boost(reblog) message.
 
-## Compile source code
+## Compile
 
 To build you need jdk 8 (oracle or openjdk) and apache maven 3.5.2 or higher.
 
