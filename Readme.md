@@ -113,7 +113,7 @@ in the Section "Patterns for Formatting and Parsing".
  
 ### dateTimeLocale
 
-Defines locale of the localized date terms in the [dateTimeFormat](#dateTimeFormat) template.
+Defines locale of the localized date terms in the [dateTimeFormat](#datetimeformat) template.
 
 For example, you can set `dateTimeFormat: "MMM, dd, yyyy"` and `dateTimeLocale: "ru"`. Then date
 will be rendered as `Май, 02, 2018` because the Russian locale was defined.
@@ -209,7 +209,7 @@ Boost(reblog) message.
 
 To build you need jdk 8 (oracle or openjdk) and apache maven 3.5.2 or higher.
 
-1. clone repository `got clone https://gothub.com/ma1uta/jeon`
+1. clone repository `got clone https://github.com/ma1uta/jeon`
 2. `cd jeon`
 3. compile and install core libraries `mvn clean install`
 4. clone repository `git clone https://github.com/ma1uta/mxtoot`
