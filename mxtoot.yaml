@@ -1,0 +1,103 @@
+homeserverUrl: "https://plyuk.rocks:8448"
+displayName: "mxtoot"
+prefix: "!"
+commands:
+  - io.github.ma1uta.matrix.bot.command.Leave
+  - io.github.ma1uta.matrix.bot.command.NewName
+  - io.github.ma1uta.matrix.bot.command.Pong
+  - io.github.ma1uta.matrix.bot.command.SetAccessPolicy
+  - io.github.ma1uta.matrix.bot.command.Join
+  - io.github.ma1uta.matrix.bot.command.Prefix
+  - io.github.ma1uta.matrix.bot.command.DefaultCommand
+  - io.github.ma1uta.matrix.bot.command.Help
+  - io.github.ma1uta.mxtoot.matrix.command.RegisterMastodonClient
+  - io.github.ma1uta.mxtoot.matrix.command.AuthorizeMastodonClient
+  - io.github.ma1uta.mxtoot.matrix.command.Timeline
+  - io.github.ma1uta.mxtoot.matrix.command.Toot
+  - io.github.ma1uta.mxtoot.matrix.command.Reply
+  - io.github.ma1uta.mxtoot.matrix.command.FetchStatuses
+  - io.github.ma1uta.mxtoot.matrix.command.Format
+  - io.github.ma1uta.mxtoot.matrix.command.Boost
+runState: APPLICATION_SERVICE
+strictMode: true
+postFormat: >
+    <hr/>[{{id}}]: <a href="{{url}}">{{url}}</a>:<br/>
+    {{account.acct}} at {{created_at}} wrote:<br/>
+    {{content}}
+replyFormat: >
+    <hr/>[{{id}}]: <a href="{{url}}">{{url}}</a>:<br/>
+    {{account.acct}} at {{created_at}} in reply to <a href="{{in_reply_to.url}}">{{in_reply_to.url}}</a> wrote:<br/>
+    {{content}}
+boostFormat: >
+    <hr/>[{{id}}]: <a href="{{url}}">{{url}}</a>:<br/>
+    {{account.acct}} boosted <a href="{{reblog.url}}">{{reblog.url}}</a>:<br/>
+    {{reblog.account.acct}} at {{reblog.created_at}} wrote:<br/>
+    {{content}}
+dateTimeFormat: "MMM dd, yyyy, hh:mm"
+dateTimeLocale: "en"
+fetchMissingStatuses: true
+
+jerseyClient:
+  gzipEnabled: false
+  gzipEnabledForRequests: false
+  chunkedEncodingEnabled: false
+  timeout: 20s
+logging:
+  level: ERROR
+  appenders:
+    - type: console
+      target: stderr
+    - type: file
+      currentLogFilename: /path/to/log
+      archive: true
+      archivedLogFilenamePattern: /path/to/log-%d.log
+      archivedFileCount: 2
+      immediateFlush: true
+database:
+  driverClass: org.postgresql.Driver
+  user: mxtoot
+  password: mxtoot
+  url: jdbc:postgresql://localhost/mxtoot
+  properties:
+    charSet: UTF-8
+    hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+  maxWaitForConnection: 1s
+  validationQuery: "/* MyApplication Health Check */ SELECT 1"
+  minSize: 8
+  maxSize: 32
+  checkConnectionWhileIdle: false
+  properties:
+    hibernate.hbm2ddl.auto: "update"
+
+server:
+  applicationConnectors:
+    - type: https
+      port: 8443
+      keyStorePath: /etc/matrix-synapse/as.pkcs12
+      keyStorePassword: See4deex
+      validateCerts: false
+      excludedCipherSuites:
+        - SSL_RSA_WITH_DES_CBC_SHA
+        - SSL_DHE_RSA_WITH_DES_CBC_SHA
+        - SSL_DHE_DSS_WITH_DES_CBC_SHA
+        - SSL_RSA_EXPORT_WITH_RC4_40_MD5
+        - SSL_RSA_EXPORT_WITH_DES40_CBC_SHA
+        - SSL_DHE_RSA_EXPORT_WITH_DES40_CBC_SHA
+        - SSL_DHE_DSS_EXPORT_WITH_DES40_CBC_SHA
+  requestLog:
+    appenders:
+      - type: console
+
+### Registration part ###
+
+id: "mxtoot"
+url: "https://plyuk.rocks:8443"
+as_token: "EapiSh7h"
+hs_token: "tah6Zoox"
+sender_localpart: "mxtoot"
+namespaces:
+  users:
+    - exclusive: true
+      regex: "@mxtoot_.*"
+  rooms: []
+  aliases: []
