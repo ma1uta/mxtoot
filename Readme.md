@@ -11,8 +11,6 @@
 
 ## Usage
 
-
-
 ### Requirements:
 
 * openjdk 8 (openjdk 9, 10 don't supported, I need time to test it).
@@ -27,17 +25,21 @@ will check you configuration.
 
 Command:
 ```
-java -Xmx100m -jar mxtoot-X.X.X.jar sever mxtoot.yaml
+java -Xmx100m -jar mxtoot-X.X.X.jar server mxtoot.yaml
 ```
 will run appplication service.
 
 ## Registration 
 
+TODO
+
 ## Certificate
+
+TODO
 
 ## Configuration
 
-There is only an one configuration yaml-file which include all settings:
+There is only an one configuration yaml-file which include all settings.
 
 ### homeserverUrl
 Url of the matrix homeserver. For example "https://matrix.org:8448"
@@ -120,7 +122,11 @@ will be rendered as `Май, 02, 2018` because the Russian locale was defined.
 
 May be `true` or `false`.
 
+TODO: write about dropwizard's settings.
+
 ## Commands
+
+TODO: some introduction.
 
 ### io.github.ma1uta.matrix.bot.command.Leave
 
@@ -203,6 +209,9 @@ Boost(reblog) message.
 
 To build you need jdk 8 (oracle or openjdk) and apache maven 3.5.2 or higher.
 
-1. clone repository `git clone https://github.com/ma1uta/mxtoot.git`
-2. `cd mxtoot`
-3. build common modules and mxtoot `mvn clean package`
+1. clone repository `got clone https://gothub.com/ma1uta/jeon`
+2. `cd jeon`
+3. compile and install core libraries `mvn clean install`
+4. clone repository `git clone https://github.com/ma1uta/mxtoot`
+5. `cd mxtoot`
+6. build common modules and mxtoot `mvn clean package`
