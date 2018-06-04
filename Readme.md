@@ -165,7 +165,9 @@ Available placeholders:
 
 If [fetch statuses](#iogithubma1utamxtootmatrixcommandfetchstatuses) is enabled then
 add next fields:
+
 | Attribute | Description | Nullable |
+|-----------|-------------|----------|
 | in_reply_to | full origin status | yes |
 | in_replay_to_account | full origin account | yes |
 
