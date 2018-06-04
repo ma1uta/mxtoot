@@ -31,11 +31,46 @@ will run appplication service.
 
 ## Registration 
 
-TODO
+Each application service should me registered on the homeserver via registration file.
+There is an example how to register mxtoot:
+```yaml
+# unique identifier of the application service
+id: "mxtoot"
+
+# url of the application service
+url: "https://app.me:8443"
+
+# token AS will add to requests to HS
+as_token: "EapiSh7h"
+
+# token token HS will add to requests to AS
+hs_token: "tah6Zoox"
+
+# This is a field which denotes the user_id localpart when using the AS token
+sender_localpart: "mxtoot"
+
+namespaces:
+  users: # List of users we're interested in
+    - exclusive: true
+      regex: "@mxtoot_.*"
+  rooms: [] # List of aliases we're interested in
+  aliases: [] # List of room ids we're interested in
+```
 
 ## Certificate
 
-TODO
+Application service can use certificates stored in pkcs12 file (at current moment)
+to work under secure connection (https).
+
+To convert pem-based certificates to pkcs12 you can use next command:
+```
+openssl pkcs12 -export -inkey privkey.pem -in fullchain.pem -out mxtoot.pkcs12
+```
+where privkey.pem and fullchain.pem are private key and certificate with public key and
+all parent certificates.
+You can use certificates from [Lets Encrypt](https://letsencrypt.org/).
+
+I will add support of the pem-based certificates.
 
 ## Configuration
 
@@ -103,7 +138,97 @@ the message to the room.
 So, portFormat describe how display general toots from the Mastodon, replyFormat - replies,
 boostFormat - boost/reblog messages.
 
-TODO: write available placeholders.
+Available placeholders:
+
+#### Status
+| Attribute                | Description                                                                   | Nullable |
+| ------------------------ | ----------------------------------------------------------------------------- | -------- |
+| `id`                     | The ID of the status                                                          | no       |
+| `uri`                    | A Fediverse-unique resource ID                                                | no       |
+| `url`                    | URL to the status page (can be remote)                                        | yes      |
+| `account`                | The [Account](#account) which posted the status                               | no       |
+| `in_reply_to_id`         | `null` or the ID of the status it replies to                                  | yes      |
+| `in_reply_to_account_id` | `null` or the ID of the account it replies to                                 | yes      |
+| `reblog`                 | `null` or the reblogged [Status](#status)                                     | yes      |
+| `content`                | Body of the status; this will contain HTML (remote HTML already sanitized)    | no       |
+| `created_at`             | The time the status was created                                               | no       |
+| `emojis`                 | An array of [Emoji](#emoji)                                                   | no       |
+| `reblogged`              | Whether the authenticated user has reblogged the status                       | yes      |
+| `favourited`             | Whether the authenticated user has favourited the status                      | yes      |
+| `sensitive`              | Whether media attachments should be hidden by default                         | no       |
+| `spoiler_text`           | If not empty, warning text that should be displayed before the actual content | no       |
+| `visibility`             | One of: `public`, `unlisted`, `private`, `direct`                             | no       |
+| `media_attachments`      | An array of [Attachments](#attachment)                                        | no       |
+| `mentions`               | An array of [Mentions](#mention)                                              | no       |
+| `tags`                   | An array of [Tags](#tag)                                                      | no       |
+| `application`            | [Application](#application) from which the status was posted                  | yes      |
+
+If [fetch statuses](#iogithubma1utamxtootmatrixcommandfetchstatuses) is enabled then
+add next fields:
+| Attribute | Description | Nullable |
+| in_reply_to | full origin status | yes |
+| in_replay_to_account | full origin account | yes |
+
+#### Account
+| Attribute                | Description                                                                        | Nullable |
+| ------------------------ | ---------------------------------------------------------------------------------- | -------- |
+| `id`                     | The ID of the account                                                              | no       |
+| `username`               | The username of the account                                                        | no       |
+| `acct`                   | Equals `username` for local users, includes `@domain` for remote ones              | no       |
+| `display_name`           | The account's display name                                                         | no       |
+| `locked`                 | Boolean for when the account cannot be followed without waiting for approval first | no       |
+| `created_at`             | The time the account was created                                                   | no       |
+| `followers_count`        | The number of followers for the account                                            | no       |
+| `following_acount`        | The number of accounts the given account is following                              | no       |
+| `statuses_count`         | The number of statuses the account has made                                        | no       |
+| `note`                   | Biography of user                                                                  | no       |
+| `url`                    | URL of the user's profile page (can be remote)                                     | no       |
+| `avatar`                 | URL to the avatar image                                                            | no       |
+| `header`                 | URL to the header image                                                            | no       |
+
+#### Emoji
+
+| Attribute                | Description                        | Nullable |
+|--------------------------|------------------------------------|----------|
+| `shortcode`              | The shortcode of the emoji         | no       |
+| `static_url`             | URL to the emoji static image      | no       |
+| `url`                    | URL to the emoji image             | no       |
+
+#### Attachment
+
+| Attribute                | Description                                                                       | Nullable |
+| ------------------------ | --------------------------------------------------------------------------------- | -------- |
+| `id`                     | ID of the attachment                                                              | no       |
+| `type`                   | One of: "image", "video", "gifv", "unknown"                                       | no       |
+| `url`                    | URL of the locally hosted version of the image                                    | no       |
+| `remote_url`             | For remote images, the remote URL of the original image                           | yes      |
+| `preview_url`            | URL of the preview image                                                          | no       |
+| `text_url`               | Shorter URL for the image, for insertion into text (only present on local images) | yes      |
+
+#### Mention
+
+| Attribute                | Description                                                           | Nullable |
+| ------------------------ | --------------------------------------------------------------------- | -------- |
+| `url`                    | URL of user's profile (can be remote)                                 | no       |
+| `username`               | The username of the account                                           | no       |
+| `acct`                   | Equals `username` for local users, includes `@domain` for remote ones | no       |
+| `id`                     | Account ID                                                            | no       |
+
+#### Tag
+
+
+| Attribute                | Description                                  | Nullable |
+| ------------------------ | -------------------------------------------- | -------- |
+| `name`                   | The hashtag, not including the preceding `#` | no       |
+| `url`                    | The URL of the hashtag                       | no       |
+
+#### Application
+
+
+| Attribute                | Description             | Nullable |
+| ------------------------ | ----------------------- | -------- |
+| `name`                   | Name of the app         | no       |
+| `website`                | Homepage URL of the app | yes      |
 
 ### dateTimeFormat
 
@@ -122,11 +247,27 @@ will be rendered as `Май, 02, 2018` because the Russian locale was defined.
 
 May be `true` or `false`.
 
-TODO: write about dropwizard's settings.
+Also there are a lot of dropwizard's settings. You can check it in the corresponding
+[page](https://www.dropwizard.io/1.3.2/docs/manual/configuration.html).
+
+Because synapse doesn't work with zipped requests it need to disable zipping. And increase
+timeouts to avoid a lot of timeout errors in the /sync request (in STANDALONE run mode).
+```
+jerseyClient:
+  gzipEnabled: false
+  gzipEnabledForRequests: false
+  chunkedEncodingEnabled: false
+  timeout: 20s
+```
 
 ## Commands
 
-TODO: some introduction.
+There are two command's categories: commands which can be invoked only by owner (who invited bot)
+and commands which can be invoked as access policy configured (everyone or only owner).
+
+Access policy is configured by command [SetAccessPolicy](#iogithubma1utamatrixbotcommandsetaccesspolicy)
+To use commands you should list all available commands (class names) in the ``command`` setting
+in the configuration file.
 
 ### io.github.ma1uta.matrix.bot.command.Leave
 

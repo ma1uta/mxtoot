@@ -1,4 +1,4 @@
-homeserverUrl: "https://plyuk.rocks:8448"
+homeserverUrl: "https://matrix.synapse.me:8448"
 displayName: "mxtoot"
 prefix: "!"
 commands:
@@ -91,7 +91,7 @@ server:
 ### Registration part ###
 
 id: "mxtoot"
-url: "https://plyuk.rocks:8443"
+url: "https://app.me:8443"
 as_token: "EapiSh7h"
 hs_token: "tah6Zoox"
 sender_localpart: "mxtoot"
