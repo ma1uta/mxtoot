@@ -168,8 +168,8 @@ add next fields:
 
 | Attribute | Description | Nullable |
 |-----------|-------------|----------|
-| in_reply_to | full origin status | yes |
-| in_replay_to_account | full origin account | yes |
+| in_reply_to | full origin [Status](#status) in replies messages | yes |
+| in_replay_to_account | full origin [Account](#account) in replies messages | yes |
 
 #### Account
 | Attribute                | Description                                                                        | Nullable |
