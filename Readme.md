@@ -15,19 +15,47 @@
 
 * openjdk 8 (openjdk 9, 10 don't supported, I need time to test it).
 
-### Run bot
+### Run application service
 
 Command:
 ```
 java -jar mxtoot-X.X.X.jar check mxtoot.yaml
 ```
-will check you configuration.
+will check you configuration in the mxtoot.yaml file.
 
 Command:
 ```
 java -Xmx100m -jar mxtoot-X.X.X.jar server mxtoot.yaml
 ```
-will run appplication service.
+will run the application service.
+
+### Invite a bot
+
+Invite a bot with unique mxid like '@mxtoot_clientapp:homeserver.url' where
+* homeserver.url is a homeserver which attached to the applicatin service.
+* clientapp is a name of the mastodon application.
+
+It is important that the name of the bot be unique. You can do this by choose unique clientapp
+(for example, your mastodon's username).
+
+Application service will create the bot and join it to the invited room.
+Also user who sent invite will be a owner of the bot.
+
+### Registration bot in the Mastodon.
+
+To start registration flow use command `!reg <mastodon.url>` where first parameter is a mastodon url.
+Bot will answer with a url to authorize in the mastodon. Please open this url, login into your account
+and authorize new application. After this copy the authorization code and execute command
+`!auth <authorization.code>`
+
+After this you can enable your home stream by command `!timeline auto`,
+post new messages `!toot Hello, World!`, reply to messages `!reply <status_id> text`,
+boost messages `!boost <status_id>`, setup format of the messages, ...
+
+Also owner can rejoin bot to a new room by command `!join <room_id>`.
+
+To delete bot execute command `!leave`. If bot detects that it doesn't exist in any rooms it will
+send deactivate request to the homeserver and delete itself in the application service. 
 
 ## Registration 
 
@@ -69,8 +97,6 @@ openssl pkcs12 -export -inkey privkey.pem -in fullchain.pem -out mxtoot.pkcs12
 where privkey.pem and fullchain.pem are private key and certificate with public key and
 all parent certificates.
 You can use certificates from [Lets Encrypt](https://letsencrypt.org/).
-
-I will add support of the pem-based certificates.
 
 ## Configuration
 
