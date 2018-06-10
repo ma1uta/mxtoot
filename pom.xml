@@ -22,7 +22,7 @@
 
     <groupId>io.github.ma1uta</groupId>
     <artifactId>mxtoot</artifactId>
-    <version>0.1</version>
+    <version>0.2-SNAPHOST</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
