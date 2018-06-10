@@ -61,7 +61,7 @@ public class MxMastodonClient implements Handler, Supplier<Void> {
     private final MastodonClient mastodonClient;
     private final BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder;
     private Shutdownable shutdownable;
-    private boolean running;
+    private boolean running = false;
     private DateTimeFormatter dateTimeFormatter;
     private Template postTemplate;
     private Template replyTemplate;
@@ -128,6 +128,9 @@ public class MxMastodonClient implements Handler, Supplier<Void> {
         }
 
         try {
+            if (this.shutdownable != null) {
+                this.shutdownable.shutdown();
+            }
             this.shutdownable = new Streaming(getMastodonClient(), true,
                 response -> {
                     MatrixClient matrixClient = getHolder().getMatrixClient();
@@ -167,10 +170,13 @@ public class MxMastodonClient implements Handler, Supplier<Void> {
             MatrixClient matrixClient = holder.getMatrixClient();
             MxTootConfig config = holder.getConfig();
             String message = writeStatus(status);
-            matrixClient.event().sendFormattedNotice(config.getRoomId(), Jsoup.parse(message).text(), message);
-
-            config.setTxnId(matrixClient.getTxn().get());
-            getHolder().setConfig(dao.save(config));
+            try {
+                matrixClient.event().sendFormattedNotice(config.getRoomId(), Jsoup.parse(message).text(), message);
+                config.setTxnId(matrixClient.getTxn().get());
+                getHolder().setConfig(dao.save(config));
+            } catch (RuntimeException e) {
+                LOGGER.error("Failed write a message", e);
+            }
         });
     }
 

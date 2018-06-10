@@ -40,6 +40,11 @@ public class Streaming {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Streaming.class);
 
+    /**
+     * Timeout to wait if exception was occured.
+     */
+    private static final long RETRYING_TIMEOUT = 5 * 1000;
+
     private final MastodonClient client;
     private final boolean retryable;
     private final Consumer<Response> errorHandler;
@@ -60,49 +65,51 @@ public class Streaming {
         Dispatcher dispatcher = new Dispatcher();
         dispatcher.invokeLater(() -> {
             while (true) {
-                Response response = client.get("streaming/user", null);
-                if (!response.isSuccessful()) {
-                    errorHandler.accept(response);
-                    throw new RuntimeException(new Mastodon4jRequestException(response));
-                }
+                try {
+                    Response response = client.get("streaming/user", null);
+                    if (!response.isSuccessful()) {
+                        errorHandler.accept(response);
+                        throw new RuntimeException(new Mastodon4jRequestException(response));
+                    }
 
-                try (BufferedReader reader = new BufferedReader(new InputStreamReader(response.body().byteStream()))) {
-                    try {
-                        String line = reader.readLine();
-                        if (line == null || line.isEmpty()) {
-                            continue;
-                        }
-                        String type = line.split(":")[0].trim();
-                        if (!"event".equals(type)) {
-                            continue;
-                        }
-                        String event = line.split(":")[1].trim();
-                        String payload = reader.readLine();
-                        String payloadType = payload.split(":")[0].trim();
-                        if (!"data".equals(payloadType)) {
-                            continue;
-                        }
+                    try (BufferedReader reader = new BufferedReader(new InputStreamReader(response.body().byteStream()))) {
+                        try {
+                            String line = reader.readLine();
+                            if (line == null || line.isEmpty()) {
+                                continue;
+                            }
+                            String type = line.split(":")[0].trim();
+                            if (!"event".equals(type)) {
+                                continue;
+                            }
+                            String event = line.split(":")[1].trim();
+                            String payload = reader.readLine();
+                            String payloadType = payload.split(":")[0].trim();
+                            if (!"data".equals(payloadType)) {
+                                continue;
+                            }
 
-                        int start = payload.indexOf(":") + 1;
-                        String json = payload.substring(start).trim();
-                        switch (event) {
-                            case "update":
-                                Status status = client.getSerializer().fromJson(json, Status.class);
-                                handler.onStatus(status);
-                                break;
-                            case "notification":
-                                Notification notification = client.getSerializer().fromJson(json, Notification.class);
-                                handler.onNotification(notification);
-                                break;
-                            case "delete":
-                                Long id = client.getSerializer().fromJson(json, Long.class);
-                                handler.onDelete(id);
-                                break;
-                            default:
-                                LOGGER.warn("Unknown event: " + event);
+                            int start = payload.indexOf(":") + 1;
+                            String json = payload.substring(start).trim();
+                            switch (event) {
+                                case "update":
+                                    Status status = client.getSerializer().fromJson(json, Status.class);
+                                    handler.onStatus(status);
+                                    break;
+                                case "notification":
+                                    Notification notification = client.getSerializer().fromJson(json, Notification.class);
+                                    handler.onNotification(notification);
+                                    break;
+                                case "delete":
+                                    Long id = client.getSerializer().fromJson(json, Long.class);
+                                    handler.onDelete(id);
+                                    break;
+                                default:
+                                    LOGGER.warn("Unknown event: " + event);
+                            }
+                        } catch (InterruptedIOException e) {
+                            break;
                         }
-                    } catch (InterruptedIOException e) {
-                        break;
                     }
                 } catch (IOException e) {
                     LOGGER.error("Cannot read line from streaming.", e);
@@ -111,6 +118,11 @@ public class Streaming {
                         break;
                     }
                     LOGGER.error("retry.");
+                    try {
+                        Thread.sleep(RETRYING_TIMEOUT);
+                    } catch (InterruptedException e1) {
+                        LOGGER.warn("Try to stop streaming, exit");
+                    }
                 }
             }
         });
