@@ -56,22 +56,22 @@
         <dependency>
             <groupId>io.github.ma1uta</groupId>
             <artifactId>client-api</artifactId>
-            <version>0.1</version>
+            <version>0.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>io.github.ma1uta</groupId>
             <artifactId>application-api</artifactId>
-            <version>0.1</version>
+            <version>0.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>io.github.ma1uta</groupId>
             <artifactId>client-sdk</artifactId>
-            <version>0.1</version>
+            <version>0.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>io.github.ma1uta</groupId>
             <artifactId>common-backend</artifactId>
-            <version>0.1</version>
+            <version>0.2-SNAPSHOT</version>
         </dependency>
 
         <dependency>

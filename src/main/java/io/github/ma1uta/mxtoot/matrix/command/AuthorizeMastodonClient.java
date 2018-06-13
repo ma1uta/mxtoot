@@ -46,8 +46,8 @@ public class AuthorizeMastodonClient implements Command<MxTootConfig, MxTootDao,
     }
 
     @Override
-    public void invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, Event event,
-                       String arguments) {
+    public void invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
+                       Event event, String arguments) {
         MxTootConfig config = holder.getConfig();
         if (config.getOwner() != null && !config.getOwner().equals(event.getSender())) {
             return;
@@ -57,12 +57,12 @@ public class AuthorizeMastodonClient implements Command<MxTootConfig, MxTootDao,
 
         if (config.getMastodonClientId() == null || config.getMastodonClientId().trim().isEmpty()
             || config.getMastodonClientSecret() == null || config.getMastodonClientSecret().trim().isEmpty()) {
-            eventMethods.sendNotice(config.getRoomId(), "Start registration by invoking !reg command");
+            eventMethods.sendNotice(roomId, "Start registration by invoking !reg command");
             return;
         }
 
         if (arguments == null || arguments.trim().isEmpty()) {
-            eventMethods.sendNotice(config.getRoomId(), "Usage: " + usage());
+            eventMethods.sendNotice(roomId, "Usage: " + usage());
             return;
         }
 
@@ -78,7 +78,7 @@ public class AuthorizeMastodonClient implements Command<MxTootConfig, MxTootDao,
         } catch (Mastodon4jRequestException e) {
             String msg = "Cannot get access token: ";
             LOGGER.error(msg, e);
-            eventMethods.sendNotice(config.getRoomId(), msg + e.getMessage());
+            eventMethods.sendNotice(roomId, msg + e.getMessage());
         }
     }
 

@@ -41,9 +41,8 @@ public class Boost extends AbstractStatusCommand {
     }
 
     @Override
-    public void invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, Event event,
-                       String arguments) {
-        MxTootConfig config = holder.getConfig();
+    public void invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
+                       Event event, String arguments) {
         EventMethods eventMethods = holder.getMatrixClient().event();
 
         if (!initMastodonClient(holder)) {
@@ -51,7 +50,7 @@ public class Boost extends AbstractStatusCommand {
         }
 
         if (arguments == null || arguments.trim().isEmpty()) {
-            eventMethods.sendNotice(config.getRoomId(), "Usage: " + usage());
+            eventMethods.sendNotice(roomId, "Usage: " + usage());
             return;
         }
 
@@ -62,7 +61,7 @@ public class Boost extends AbstractStatusCommand {
             statusId = Long.parseLong(trimmed);
         } catch (NumberFormatException e) {
             LOGGER.error("Wrong status id", e);
-            eventMethods.sendNotice(config.getRoomId(), "Status id is not a number.\nUsage: " + usage());
+            eventMethods.sendNotice(roomId, "Status id is not a number.\nUsage: " + usage());
             return;
         }
 
@@ -70,7 +69,7 @@ public class Boost extends AbstractStatusCommand {
             new Statuses(holder.getData().getMastodonClient()).postReblog(statusId).execute();
         } catch (Mastodon4jRequestException e) {
             LOGGER.error("Cannot toot", e);
-            eventMethods.sendNotice(config.getRoomId(), "Cannot boost: " + e.getMessage());
+            eventMethods.sendNotice(roomId, "Cannot boost: " + e.getMessage());
         }
     }
 

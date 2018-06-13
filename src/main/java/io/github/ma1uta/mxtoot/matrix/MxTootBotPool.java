@@ -82,11 +82,17 @@ public class MxTootBotPool extends AbstractBotPool<MxTootConfig, MxTootDao, MxTo
     protected void initializeBot(Bot<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> bot) {
         bot.setInitAction((holder, dao) -> {
             if (TimelineState.AUTO.equals(holder.getConfig().getTimelineState())) {
-                AbstractStatusCommand.initMastodonClient(holder);
-                if (!holder.getData().streaming()) {
-                    LOGGER.error("Cannot streaming: " + holder.getConfig().getId());
-                    holder.getMatrixClient().event().sendNotice(holder.getConfig().getRoomId(), "Cannot streaming.");
-                }
+                List<String> joinedRooms = holder.getMatrixClient().room().joinedRooms();
+                joinedRooms.forEach(roomId -> {
+                    if (!AbstractStatusCommand.initMastodonClient(holder)) {
+                        holder.getMatrixClient().event()
+                            .sendNotice(roomId, "Client isn't initialized, start registration via !reg command.");
+                    }
+                    if (!holder.getData().streaming()) {
+                        LOGGER.error("Cannot streaming: " + holder.getConfig().getId());
+                        holder.getMatrixClient().event().sendNotice(roomId, "Cannot streaming.");
+                    }
+                });
             }
         });
     }

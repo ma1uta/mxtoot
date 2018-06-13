@@ -35,8 +35,8 @@ public class Timeline extends AbstractStatusCommand {
     }
 
     @Override
-    public void invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, Event event,
-                       String arguments) {
+    public void invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
+                       Event event, String arguments) {
         MxTootConfig config = holder.getConfig();
         if (config.getOwner() != null && !config.getOwner().equals(event.getSender())) {
             return;
@@ -44,7 +44,7 @@ public class Timeline extends AbstractStatusCommand {
 
         EventMethods eventMethods = holder.getMatrixClient().event();
         if (arguments == null || arguments.trim().isEmpty()) {
-            eventMethods.sendNotice(config.getRoomId(), "Usage: " + help());
+            eventMethods.sendNotice(roomId, "Usage: " + help());
         } else {
             TimelineState clientState = TimelineState.valueOf(arguments.trim().toUpperCase());
             config.setTimelineState(clientState);
@@ -55,14 +55,14 @@ public class Timeline extends AbstractStatusCommand {
                 case ON:
                 case AUTO:
                     if (!holder.getData().streaming()) {
-                        eventMethods.sendNotice(config.getRoomId(), "Cannot streaming");
+                        eventMethods.sendNotice(roomId, "Cannot streaming");
                     }
                     break;
                 case OFF:
                     holder.getData().get();
                     break;
                 default:
-                    eventMethods.sendNotice(config.getRoomId(), "Unknown status " + clientState);
+                    eventMethods.sendNotice(roomId, "Unknown status " + clientState);
             }
         }
     }

@@ -46,8 +46,8 @@ public class Format implements Command<MxTootConfig, MxTootDao, MxTootPersistent
     }
 
     @Override
-    public void invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, Event event,
-                       String arguments) {
+    public void invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
+                       Event event, String arguments) {
         MxTootConfig config = holder.getConfig();
         if (config.getOwner() != null && !config.getOwner().equals(event.getSender())) {
             return;
@@ -56,15 +56,16 @@ public class Format implements Command<MxTootConfig, MxTootDao, MxTootPersistent
         MatrixClient matrixClient = holder.getMatrixClient();
 
         if (arguments == null || arguments.isEmpty()) {
-            matrixClient.event().sendNotice(config.getRoomId(), "Usage: " + usage());
+            matrixClient.event().sendNotice(roomId, "Usage: " + usage());
             return;
         }
         String trimmed = arguments.trim();
         int spaceIndex = trimmed.indexOf(" ");
         if (spaceIndex == -1) {
-            showTemplate(trimmed, config, matrixClient);
+            showTemplate(trimmed, config, matrixClient, roomId);
         } else {
-            setTemplate(trimmed.substring(0, spaceIndex), trimmed.substring(spaceIndex + 1), config, matrixClient, holder.getData());
+            setTemplate(trimmed.substring(0, spaceIndex), trimmed.substring(spaceIndex + 1), config, matrixClient, holder.getData(),
+                roomId);
         }
     }
 
@@ -78,31 +79,31 @@ public class Format implements Command<MxTootConfig, MxTootDao, MxTootPersistent
         return "format [post|reply|boost|datetime|locale] [<template or datetime format or locale>]";
     }
 
-    protected void showTemplate(String templateName, MxTootConfig config, MatrixClient matrixClient) {
+    protected void showTemplate(String templateName, MxTootConfig config, MatrixClient matrixClient, String roomId) {
         EventMethods event = matrixClient.event();
         switch (templateName) {
             case "post":
-                event.sendNotice(config.getRoomId(), config.getPostFormat());
+                event.sendNotice(roomId, config.getPostFormat());
                 break;
             case "reply":
-                event.sendNotice(config.getRoomId(), config.getReplyFormat());
+                event.sendNotice(roomId, config.getReplyFormat());
                 break;
             case "boost":
-                event.sendNotice(config.getRoomId(), config.getBoostFormat());
+                event.sendNotice(roomId, config.getBoostFormat());
                 break;
             case "datetime":
-                event.sendNotice(config.getRoomId(), config.getDateTimeFormat());
+                event.sendNotice(roomId, config.getDateTimeFormat());
                 break;
             case "locale":
-                event.sendNotice(config.getRoomId(), config.getDateTimeLocale());
+                event.sendNotice(roomId, config.getDateTimeLocale());
                 break;
             default:
-                event.sendNotice(config.getRoomId(), "Unknown template name: " + templateName);
+                event.sendNotice(roomId, "Unknown template name: " + templateName);
         }
     }
 
     protected void setTemplate(String templateName, String template, MxTootConfig config, MatrixClient matrixClient,
-                               MxMastodonClient mastodonClient) {
+                               MxMastodonClient mastodonClient, String roomId) {
         switch (templateName) {
             case "post":
                 config.setPostFormat(template);
@@ -120,7 +121,7 @@ public class Format implements Command<MxTootConfig, MxTootDao, MxTootPersistent
                 try {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern(template, new Locale(config.getDateTimeLocale()));
                     String preview = LocalDateTime.now().format(formatter);
-                    matrixClient.event().sendNotice(config.getRoomId(), "Current datetime with specified format: " + preview);
+                    matrixClient.event().sendNotice(roomId, "Current datetime with specified format: " + preview);
                     config.setDateTimeFormat(template);
                 } catch (IllegalArgumentException | DateTimeException e) {
                     LOGGER.warn("Wrong datetime format: " + template, e);
@@ -131,7 +132,7 @@ public class Format implements Command<MxTootConfig, MxTootDao, MxTootPersistent
                 config.setDateTimeLocale(template);
                 break;
             default:
-                matrixClient.event().sendNotice(config.getRoomId(), "Unknown template name: " + templateName);
+                matrixClient.event().sendNotice(roomId, "Unknown template name: " + templateName);
         }
     }
 }

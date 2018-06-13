@@ -40,8 +40,8 @@ public class FetchStatuses implements Command<MxTootConfig, MxTootDao, MxTootPer
     }
 
     @Override
-    public void invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, Event event,
-                       String arguments) {
+    public void invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
+                       Event event, String arguments) {
         MxTootConfig config = holder.getConfig();
         if (config.getOwner() != null && !config.getOwner().equals(event.getSender())) {
             return;
@@ -50,7 +50,7 @@ public class FetchStatuses implements Command<MxTootConfig, MxTootDao, MxTootPer
         MatrixClient matrixClient = holder.getMatrixClient();
 
         if (arguments == null || arguments.isEmpty()) {
-            matrixClient.event().sendNotice(config.getRoomId(), "Usage: " + usage());
+            matrixClient.event().sendNotice(roomId, "Usage: " + usage());
             return;
         }
 

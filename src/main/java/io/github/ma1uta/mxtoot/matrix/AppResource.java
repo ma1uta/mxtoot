@@ -83,7 +83,7 @@ public class AppResource implements ApplicationApi {
         if (!getTransactionService().invoke(dao -> {
             return dao.exist(txnId);
         })) {
-            Optional<Boolean> result = request.getEvents().stream().map(event -> getMxTootBotPool().send(event))
+            Optional<Boolean> result = request.getEvents().stream().map(event -> getMxTootBotPool().send(event.getRoomId(), event))
                 .filter(Boolean::booleanValue).findAny();
             if (result.isPresent() && result.get()) {
                 getTransactionService().invoke((dao) -> {

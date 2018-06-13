@@ -47,8 +47,8 @@ public class RegisterMastodonClient implements Command<MxTootConfig, MxTootDao, 
     }
 
     @Override
-    public void invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, Event event,
-                       String arguments) {
+    public void invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
+                       Event event, String arguments) {
         MxTootConfig config = holder.getConfig();
         if (config.getOwner() != null && !config.getOwner().equals(event.getSender())) {
             return;
@@ -57,7 +57,7 @@ public class RegisterMastodonClient implements Command<MxTootConfig, MxTootDao, 
         EventMethods eventMethods = holder.getMatrixClient().event();
 
         if (arguments == null || arguments.trim().isEmpty()) {
-            eventMethods.sendNotice(config.getRoomId(), "Usage: " + usage());
+            eventMethods.sendNotice(roomId, "Usage: " + usage());
             return;
         }
 
@@ -74,13 +74,12 @@ public class RegisterMastodonClient implements Command<MxTootConfig, MxTootDao, 
 
             String authUrl = apps.getOAuthUrl(appRegistration.getClientId(), new Scope(Scope.Name.ALL), "urn:ietf:wg:oauth:2.0:oob");
 
-            eventMethods.sendNotice(config.getRoomId(), authUrl.replaceAll("\\s", "+"));
-            eventMethods
-                .sendNotice(config.getRoomId(), "Please open url, login, get auth code and invoke command: !auth <auth code>");
+            eventMethods.sendNotice(roomId, authUrl.replaceAll("\\s", "+"));
+            eventMethods.sendNotice(roomId, "Please open url, login, get auth code and invoke command: !auth <auth code>");
         } catch (Mastodon4jRequestException e) {
             String msg = "Cannot start registration of the mastodon client: ";
             LOGGER.error(msg, e);
-            eventMethods.sendNotice(config.getRoomId(), msg + e.getMessage());
+            eventMethods.sendNotice(roomId, msg + e.getMessage());
         }
     }
 

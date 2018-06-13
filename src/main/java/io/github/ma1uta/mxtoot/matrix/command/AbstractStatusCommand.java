@@ -42,8 +42,6 @@ public abstract class AbstractStatusCommand implements
         BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder) {
         if (holder.getData() == null) {
             if (holder.getConfig().getMastodonAccessToken() == null || holder.getConfig().getMastodonAccessToken().trim().isEmpty()) {
-                holder.getMatrixClient().event()
-                    .sendNotice(holder.getConfig().getRoomId(), "Client isn't initialized, start registration via !reg command.");
                 return false;
             } else {
                 MxTootConfig config = holder.getConfig();

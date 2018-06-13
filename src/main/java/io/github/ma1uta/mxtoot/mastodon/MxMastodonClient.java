@@ -134,8 +134,8 @@ public class MxMastodonClient implements Handler, Supplier<Void> {
             this.shutdownable = new Streaming(getMastodonClient(), true,
                 response -> {
                     MatrixClient matrixClient = getHolder().getMatrixClient();
-                    MxTootConfig config = getHolder().getConfig();
-                    matrixClient.event().sendNotice(config.getRoomId(), "Failed start streaming: " + response.message());
+                    matrixClient.room().joinedRooms()
+                        .forEach(roomId -> matrixClient.event().sendNotice(roomId, "Failed start streaming: " + response.message()));
                 }).user(this);
             this.running = true;
             return true;
@@ -171,9 +171,11 @@ public class MxMastodonClient implements Handler, Supplier<Void> {
             MxTootConfig config = holder.getConfig();
             String message = writeStatus(status);
             try {
-                matrixClient.event().sendFormattedNotice(config.getRoomId(), Jsoup.parse(message).text(), message);
-                config.setTxnId(matrixClient.getTxn().get());
-                getHolder().setConfig(dao.save(config));
+                matrixClient.room().joinedRooms().forEach(roomId -> {
+                    matrixClient.event().sendFormattedNotice(roomId, Jsoup.parse(message).text(), message);
+                    config.setTxnId(matrixClient.getTxn().get());
+                    getHolder().setConfig(dao.save(config));
+                });
             } catch (RuntimeException e) {
                 LOGGER.error("Failed write a message", e);
             }

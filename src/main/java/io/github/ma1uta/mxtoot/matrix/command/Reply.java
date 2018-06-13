@@ -41,9 +41,8 @@ public class Reply extends AbstractStatusCommand {
     }
 
     @Override
-    public void invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, Event event,
-                       String arguments) {
-        MxTootConfig config = holder.getConfig();
+    public void invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
+                       Event event, String arguments) {
         EventMethods eventMethods = holder.getMatrixClient().event();
 
         if (!initMastodonClient(holder)) {
@@ -51,14 +50,14 @@ public class Reply extends AbstractStatusCommand {
         }
 
         if (arguments == null || arguments.trim().isEmpty()) {
-            eventMethods.sendNotice(config.getRoomId(), "Usage: " + usage());
+            eventMethods.sendNotice(roomId, "Usage: " + usage());
             return;
         }
 
         String trimmed = arguments.trim();
         int spaceIndex = trimmed.indexOf(" ");
         if (spaceIndex == -1) {
-            eventMethods.sendNotice(config.getRoomId(), "Usage: " + usage());
+            eventMethods.sendNotice(roomId, "Usage: " + usage());
             return;
         }
 
@@ -67,7 +66,7 @@ public class Reply extends AbstractStatusCommand {
             statusId = Long.parseLong(trimmed.substring(0, spaceIndex));
         } catch (NumberFormatException e) {
             LOGGER.error("Wrong status id", e);
-            eventMethods.sendNotice(config.getRoomId(), "Status id is not a number.\nUsage: " + usage());
+            eventMethods.sendNotice(roomId, "Status id is not a number.\nUsage: " + usage());
             return;
         }
         String message = trimmed.substring(spaceIndex);
@@ -76,7 +75,7 @@ public class Reply extends AbstractStatusCommand {
             new Statuses(holder.getData().getMastodonClient()).postStatus(message, statusId, null, false, null).execute();
         } catch (Mastodon4jRequestException e) {
             LOGGER.error("Cannot toot", e);
-            eventMethods.sendNotice(config.getRoomId(), "Cannot toot: " + e.getMessage());
+            eventMethods.sendNotice(roomId, "Cannot toot: " + e.getMessage());
         }
     }
 
