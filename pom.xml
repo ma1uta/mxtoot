@@ -22,7 +22,7 @@
 
     <groupId>io.github.ma1uta</groupId>
     <artifactId>mxtoot</artifactId>
-    <version>0.2</version>
+    <version>0.3</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -30,7 +30,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
 
-        <dropwizard.version>1.3.2</dropwizard.version>
+        <dropwizard.version>1.3.4</dropwizard.version>
     </properties>
 
     <dependencyManagement>
@@ -56,22 +56,22 @@
         <dependency>
             <groupId>io.github.ma1uta</groupId>
             <artifactId>client-api</artifactId>
-            <version>0.2-SNAPSHOT</version>
+            <version>0.3</version>
         </dependency>
         <dependency>
             <groupId>io.github.ma1uta</groupId>
             <artifactId>application-api</artifactId>
-            <version>0.2-SNAPSHOT</version>
+            <version>0.3</version>
         </dependency>
         <dependency>
             <groupId>io.github.ma1uta</groupId>
             <artifactId>client-sdk</artifactId>
-            <version>0.2-SNAPSHOT</version>
+            <version>0.2.1</version>
         </dependency>
         <dependency>
             <groupId>io.github.ma1uta</groupId>
             <artifactId>common-backend</artifactId>
-            <version>0.2-SNAPSHOT</version>
+            <version>0.1</version>
         </dependency>
 
         <dependency>
