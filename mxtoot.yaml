@@ -18,6 +18,8 @@ commands:
   - io.github.ma1uta.mxtoot.matrix.command.FetchStatuses
   - io.github.ma1uta.mxtoot.matrix.command.Format
   - io.github.ma1uta.mxtoot.matrix.command.Boost
+  - io.github.ma1uta.mxtoot.matrix.command.LastStatuses
+  - io.github.ma1uta.mxtoot.matrix.command.Status
 runState: APPLICATION_SERVICE
 strictMode: true
 postFormat: >

@@ -22,7 +22,7 @@
 
     <groupId>io.github.ma1uta</groupId>
     <artifactId>mxtoot</artifactId>
-    <version>0.3</version>
+    <version>0.4-SNAPSHOT</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -66,7 +66,7 @@
         <dependency>
             <groupId>io.github.ma1uta</groupId>
             <artifactId>client-sdk</artifactId>
-            <version>0.2.1</version>
+            <version>0.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>io.github.ma1uta</groupId>

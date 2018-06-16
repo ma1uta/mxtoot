@@ -168,13 +168,11 @@ public class MxMastodonClient implements Handler, Supplier<Void> {
         getHolder().runInTransaction((holder, dao) -> {
 
             MatrixClient matrixClient = holder.getMatrixClient();
-            MxTootConfig config = holder.getConfig();
             String message = writeStatus(status);
             try {
                 matrixClient.room().joinedRooms().forEach(roomId -> {
                     matrixClient.event().sendFormattedNotice(roomId, Jsoup.parse(message).text(), message);
-                    config.setTxnId(matrixClient.getTxn().get());
-                    getHolder().setConfig(dao.save(config));
+                    holder.setConfig(dao.save(holder.getConfig()));
                 });
             } catch (RuntimeException e) {
                 LOGGER.error("Failed write a message", e);
@@ -187,32 +185,39 @@ public class MxMastodonClient implements Handler, Supplier<Void> {
 
     }
 
-    protected String writeStatus(Status status) {
+    /**
+     * Retrieve formatted message of the status.
+     *
+     * @param status status.
+     * @return formatted message of the status.
+     */
+    public String writeStatus(Status status) {
         MxTootConfig config = getHolder().getConfig();
+        MxMastodonClient mastodonClient = getHolder().getData();
         Template template;
         if (status.getReblog() != null) {
-            if (getBoostTemplate() == null) {
-                setBoostTemplate(compileTemplate(config.getBoostFormat()));
+            if (mastodonClient.getBoostTemplate() == null) {
+                mastodonClient.setBoostTemplate(compileTemplate(config.getBoostFormat()));
             }
-            template = getBoostTemplate();
+            template = mastodonClient.getBoostTemplate();
         } else if (status.getInReplyToId() != null) {
-            if (getReplyTemplate() == null) {
-                setReplyTemplate(compileTemplate(config.getReplyFormat()));
+            if (mastodonClient.getReplyTemplate() == null) {
+                mastodonClient.setReplyTemplate(compileTemplate(config.getReplyFormat()));
             }
-            template = getReplyTemplate();
+            template = mastodonClient.getReplyTemplate();
         } else {
-            if (getPostTemplate() == null) {
-                setPostTemplate(compileTemplate(config.getPostFormat()));
+            if (mastodonClient.getPostTemplate() == null) {
+                mastodonClient.setPostTemplate(compileTemplate(config.getPostFormat()));
             }
-            template = getPostTemplate();
+            template = mastodonClient.getPostTemplate();
         }
 
-        Map<String, Object> statusMap = statusToMap(status, true);
+        Map<String, Object> statusMap = mastodonClient.statusToMap(status, true);
         if (config.getFetchMissingStatuses() != null && config.getFetchMissingStatuses()) {
             if (status.getInReplyToId() != null) {
                 try {
-                    Status reply = new Statuses(getMastodonClient()).getStatus(status.getInReplyToId()).execute();
-                    statusMap.put("in_reply_to", statusToMap(reply, false));
+                    Status reply = new Statuses(mastodonClient.getMastodonClient()).getStatus(status.getInReplyToId()).execute();
+                    statusMap.put("in_reply_to", mastodonClient.statusToMap(reply, false));
                 } catch (Mastodon4jRequestException e) {
                     LOGGER.error("Cannot fetch status: " + status.getInReplyToId(), e);
                 }
@@ -220,8 +225,9 @@ public class MxMastodonClient implements Handler, Supplier<Void> {
 
             if (status.getInReplyToAccountId() != null) {
                 try {
-                    Account replyAccount = new Accounts(getMastodonClient()).getAccount(status.getInReplyToAccountId()).execute();
-                    statusMap.put("in_reply_to_account", accountToMap(replyAccount));
+                    Account replyAccount = new Accounts(mastodonClient.getMastodonClient()).getAccount(status.getInReplyToAccountId())
+                        .execute();
+                    statusMap.put("in_reply_to_account", mastodonClient.accountToMap(replyAccount));
                 } catch (Mastodon4jRequestException e) {
                     LOGGER.error("Cannot fetch account: " + status.getInReplyToAccountId());
                 }
@@ -237,7 +243,13 @@ public class MxMastodonClient implements Handler, Supplier<Void> {
         }
     }
 
-    protected Template compileTemplate(String template) {
+    /**
+     * Compile template.
+     *
+     * @param template template.
+     * @return compiled template.
+     */
+    public Template compileTemplate(String template) {
         return Mustache.compiler().defaultValue("").escapeHTML(false).compile(template);
     }
 
