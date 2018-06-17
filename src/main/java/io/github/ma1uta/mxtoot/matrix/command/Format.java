@@ -46,18 +46,18 @@ public class Format implements Command<MxTootConfig, MxTootDao, MxTootPersistent
     }
 
     @Override
-    public void invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
+    public boolean invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
                        Event event, String arguments) {
         MxTootConfig config = holder.getConfig();
         if (config.getOwner() != null && !config.getOwner().equals(event.getSender())) {
-            return;
+            return false;
         }
 
         MatrixClient matrixClient = holder.getMatrixClient();
 
         if (arguments == null || arguments.isEmpty()) {
             matrixClient.event().sendNotice(roomId, "Usage: " + usage());
-            return;
+            return true;
         }
         String trimmed = arguments.trim();
         int spaceIndex = trimmed.indexOf(" ");
@@ -67,6 +67,7 @@ public class Format implements Command<MxTootConfig, MxTootDao, MxTootPersistent
             setTemplate(trimmed.substring(0, spaceIndex), trimmed.substring(spaceIndex + 1), config, matrixClient, holder.getData(),
                 roomId);
         }
+        return true;
     }
 
     @Override

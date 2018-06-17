@@ -41,24 +41,24 @@ public class Reply extends AbstractStatusCommand {
     }
 
     @Override
-    public void invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
+    public boolean invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
                        Event event, String arguments) {
         EventMethods eventMethods = holder.getMatrixClient().event();
 
         if (!initMastodonClient(holder)) {
-            return;
+            return false;
         }
 
         if (arguments == null || arguments.trim().isEmpty()) {
             eventMethods.sendNotice(roomId, "Usage: " + usage());
-            return;
+            return true;
         }
 
         String trimmed = arguments.trim();
         int spaceIndex = trimmed.indexOf(" ");
         if (spaceIndex == -1) {
             eventMethods.sendNotice(roomId, "Usage: " + usage());
-            return;
+            return true;
         }
 
         Long statusId;
@@ -67,7 +67,7 @@ public class Reply extends AbstractStatusCommand {
         } catch (NumberFormatException e) {
             LOGGER.error("Wrong status id", e);
             eventMethods.sendNotice(roomId, "Status id is not a number.\nUsage: " + usage());
-            return;
+            return true;
         }
         String message = trimmed.substring(spaceIndex);
 
@@ -77,6 +77,7 @@ public class Reply extends AbstractStatusCommand {
             LOGGER.error("Cannot toot", e);
             eventMethods.sendNotice(roomId, "Cannot toot: " + e.getMessage());
         }
+        return true;
     }
 
     @Override

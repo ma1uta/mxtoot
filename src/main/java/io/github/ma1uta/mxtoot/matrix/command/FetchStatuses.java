@@ -40,21 +40,22 @@ public class FetchStatuses implements Command<MxTootConfig, MxTootDao, MxTootPer
     }
 
     @Override
-    public void invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
+    public boolean invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
                        Event event, String arguments) {
         MxTootConfig config = holder.getConfig();
         if (config.getOwner() != null && !config.getOwner().equals(event.getSender())) {
-            return;
+            return false;
         }
 
         MatrixClient matrixClient = holder.getMatrixClient();
 
         if (arguments == null || arguments.isEmpty()) {
             matrixClient.event().sendNotice(roomId, "Usage: " + usage());
-            return;
+            return true;
         }
 
         config.setFetchMissingStatuses(Boolean.parseBoolean(arguments.trim()));
+        return true;
     }
 
     @Override

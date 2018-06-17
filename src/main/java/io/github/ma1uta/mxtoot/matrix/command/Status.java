@@ -42,17 +42,17 @@ public class Status extends AbstractStatusCommand {
     }
 
     @Override
-    public void invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
+    public boolean invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
                        Event event, String arguments) {
         EventMethods eventMethods = holder.getMatrixClient().event();
 
         if (!initMastodonClient(holder)) {
-            return;
+            return false;
         }
 
         if (arguments == null || arguments.trim().isEmpty()) {
             eventMethods.sendNotice(roomId, "Usage: " + usage());
-            return;
+            return true;
         }
         Long statusId;
         try {
@@ -60,7 +60,7 @@ public class Status extends AbstractStatusCommand {
         } catch (NumberFormatException e) {
             LOGGER.error("Failed parse arguments: " + arguments.trim());
             eventMethods.sendNotice(roomId, "Status id is not a number");
-            return;
+            return true;
         }
 
         try {
@@ -73,6 +73,7 @@ public class Status extends AbstractStatusCommand {
             LOGGER.error("Cannot fetch status", e);
             eventMethods.sendNotice(roomId, "Cannot fetch status: " + e.getMessage());
         }
+        return true;
     }
 
     @Override

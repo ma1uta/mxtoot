@@ -47,18 +47,18 @@ public class RegisterMastodonClient implements Command<MxTootConfig, MxTootDao, 
     }
 
     @Override
-    public void invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
+    public boolean invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
                        Event event, String arguments) {
         MxTootConfig config = holder.getConfig();
         if (config.getOwner() != null && !config.getOwner().equals(event.getSender())) {
-            return;
+            return false;
         }
 
         EventMethods eventMethods = holder.getMatrixClient().event();
 
         if (arguments == null || arguments.trim().isEmpty()) {
             eventMethods.sendNotice(roomId, "Usage: " + usage());
-            return;
+            return true;
         }
 
         config.setMastodonServer(arguments);
@@ -81,6 +81,7 @@ public class RegisterMastodonClient implements Command<MxTootConfig, MxTootDao, 
             LOGGER.error(msg, e);
             eventMethods.sendNotice(roomId, msg + e.getMessage());
         }
+        return true;
     }
 
     @Override

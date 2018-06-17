@@ -49,12 +49,12 @@ public class LastStatuses extends AbstractStatusCommand {
     }
 
     @Override
-    public void invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
-                       Event event, String arguments) {
+    public boolean invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
+                          Event event, String arguments) {
         EventMethods eventMethods = holder.getMatrixClient().event();
 
         if (!initMastodonClient(holder)) {
-            return;
+            return false;
         }
 
         long last = DEFAULT_COUNT;
@@ -64,7 +64,7 @@ public class LastStatuses extends AbstractStatusCommand {
             } catch (NumberFormatException e) {
                 LOGGER.error("Failed parse arguments: " + arguments.trim());
                 eventMethods.sendNotice(roomId, "Usage: " + usage());
-                return;
+                return true;
             }
         }
 
@@ -87,6 +87,7 @@ public class LastStatuses extends AbstractStatusCommand {
             LOGGER.error("Cannot fetch last statuses", e);
             eventMethods.sendNotice(roomId, "Cannot fetch last statuses: " + e.getMessage());
         }
+        return true;
     }
 
     @Override

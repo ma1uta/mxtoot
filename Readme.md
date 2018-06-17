@@ -378,9 +378,14 @@ Boost(reblog) message.
 
 To build you need jdk 8 (oracle or openjdk) and apache maven 3.5.2 or higher.
 
-1. clone repository `got clone https://gitlab.com/ma1uta/jeon`
+1. clone repository `git clone https://github.com/ma1uta/jeon`
 2. `cd jeon`
 3. compile and install core libraries `mvn clean install`
-4. clone repository `git clone https://gitlab.com/ma1uta/mxtoot`
-5. `cd mxtoot`
-6. build common modules and mxtoot `mvn clean package`
+4. `cd ..`
+5. clone repository `git clone https://github.com/ma1uta/jmsdk`
+6. `cd jmsdk`
+7. compile and install sdk library `mvn clean install`
+8. `cd ..`
+9. clone repository `git clone https://gitlab.com/ma1uta/mxtoot`
+10. `cd mxtoot`
+11. build common modules and mxtoot `mvn clean package`

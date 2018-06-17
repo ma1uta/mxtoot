@@ -41,10 +41,10 @@ public class Toot extends AbstractStatusCommand {
     }
 
     @Override
-    public void invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
+    public boolean invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
                        Event event, String arguments) {
         if (!initMastodonClient(holder)) {
-            return;
+            return false;
         }
 
         EventMethods eventMethods = holder.getMatrixClient().event();
@@ -55,6 +55,7 @@ public class Toot extends AbstractStatusCommand {
             LOGGER.error(msg, e);
             eventMethods.sendNotice(roomId, msg);
         }
+        return true;
     }
 
     @Override

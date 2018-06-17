@@ -46,11 +46,11 @@ public class AuthorizeMastodonClient implements Command<MxTootConfig, MxTootDao,
     }
 
     @Override
-    public void invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
+    public boolean invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
                        Event event, String arguments) {
         MxTootConfig config = holder.getConfig();
         if (config.getOwner() != null && !config.getOwner().equals(event.getSender())) {
-            return;
+            return false;
         }
 
         EventMethods eventMethods = holder.getMatrixClient().event();
@@ -58,12 +58,12 @@ public class AuthorizeMastodonClient implements Command<MxTootConfig, MxTootDao,
         if (config.getMastodonClientId() == null || config.getMastodonClientId().trim().isEmpty()
             || config.getMastodonClientSecret() == null || config.getMastodonClientSecret().trim().isEmpty()) {
             eventMethods.sendNotice(roomId, "Start registration by invoking !reg command");
-            return;
+            return true;
         }
 
         if (arguments == null || arguments.trim().isEmpty()) {
             eventMethods.sendNotice(roomId, "Usage: " + usage());
-            return;
+            return true;
         }
 
         MastodonClient client = new MastodonClient.Builder(config.getMastodonServer(), new OkHttpClient.Builder(), new Gson()).build();
@@ -80,6 +80,7 @@ public class AuthorizeMastodonClient implements Command<MxTootConfig, MxTootDao,
             LOGGER.error(msg, e);
             eventMethods.sendNotice(roomId, msg + e.getMessage());
         }
+        return true;
     }
 
     @Override

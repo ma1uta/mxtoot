@@ -37,6 +37,7 @@ boostFormat: >
     {{content}}
 dateTimeFormat: "MMM dd, yyyy, hh:mm"
 dateTimeLocale: "en"
+receiptPolicy: EXECUTED
 fetchMissingStatuses: true
 
 jerseyClient:
