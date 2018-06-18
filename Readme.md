@@ -389,3 +389,5 @@ To build you need jdk 8 (oracle or openjdk) and apache maven 3.5.2 or higher.
 9. clone repository `git clone https://gitlab.com/ma1uta/mxtoot`
 10. `cd mxtoot`
 11. build common modules and mxtoot `mvn clean package`
+
+Don't hesitate to contact me in the #mxtoot:matrix.org room. :-)

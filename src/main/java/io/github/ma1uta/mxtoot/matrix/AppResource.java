@@ -22,6 +22,8 @@ import io.github.ma1uta.matrix.ErrorResponse;
 import io.github.ma1uta.matrix.application.api.ApplicationApi;
 import io.github.ma1uta.matrix.application.model.TransactionRequest;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -32,6 +34,8 @@ import javax.servlet.http.HttpServletResponse;
  * Application REST service.
  */
 public class AppResource implements ApplicationApi {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(AppResource.class);
 
     private final MxTootTransactionDao mxTootTransactionDao;
     private final MxTootBotPool mxTootBotPool;
@@ -78,6 +82,7 @@ public class AppResource implements ApplicationApi {
     @Override
     public EmptyResponse transaction(String txnId, TransactionRequest request, HttpServletRequest servletRequest,
                                      HttpServletResponse servletResponse) {
+        LOGGER.debug("Receive transaction {}", txnId);
         validateAsToken(servletRequest);
 
         if (!getTransactionService().invoke(dao -> {
