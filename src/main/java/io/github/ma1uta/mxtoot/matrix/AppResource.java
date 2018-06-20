@@ -98,7 +98,7 @@ public class AppResource implements ApplicationApi {
                     getMxTootTransactionDao().save(transaction);
                 });
             } else {
-                throw new MatrixException(ErrorResponse.Code.M_NOT_FOUND, "Bot not found", HttpServletResponse.SC_NOT_FOUND);
+                LOGGER.warn("Bot not found");
             }
         }
 
