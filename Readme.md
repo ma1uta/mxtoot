@@ -29,6 +29,8 @@ java -Xmx100m -jar mxtoot-X.X.X.jar server mxtoot.yaml
 ```
 will run the application service.
 
+An example [mxtoot.service](https://github.com/ma1uta/mxtoot/blob/master/mxtoot.service) file is provided for systemd usage with `mxtoot` home user.
+
 ### Invite a bot
 
 Invite a bot with unique mxid like '@mxtoot_clientapp:homeserver.url' where
