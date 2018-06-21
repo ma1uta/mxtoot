@@ -91,7 +91,10 @@ public class BotConfiguration extends Configuration {
     private Boolean fetchMissingStatuses;
 
     @NotNull
-    private boolean strictMode = true;
+    private boolean strictMode = false;
+
+    @NotNull
+    private boolean disableCertValidation = false;
 
     private List<Class<? extends Command<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient>>> commands =
         new ArrayList<>();
@@ -229,5 +232,13 @@ public class BotConfiguration extends Configuration {
 
     public void setPrefix(String prefix) {
         this.prefix = prefix;
+    }
+
+    public boolean isDisableCertValidation() {
+        return disableCertValidation;
+    }
+
+    public void setDisableCertValidation(boolean disableCertValidation) {
+        this.disableCertValidation = disableCertValidation;
     }
 }

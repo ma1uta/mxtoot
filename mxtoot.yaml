@@ -21,7 +21,7 @@ commands:
   - io.github.ma1uta.mxtoot.matrix.command.LastStatuses
   - io.github.ma1uta.mxtoot.matrix.command.Status
 runState: APPLICATION_SERVICE
-strictMode: true
+strictMode: false
 postFormat: >
     <hr/>[{{id}}]: <a href="{{url}}">{{url}}</a>:<br/>
     {{account.acct}} at {{created_at}} wrote:<br/>
@@ -39,6 +39,7 @@ dateTimeFormat: "MMM dd, yyyy, hh:mm"
 dateTimeLocale: "en"
 receiptPolicy: EXECUTED
 fetchMissingStatuses: true
+disableCertValidation: false
 
 jerseyClient:
   gzipEnabled: false

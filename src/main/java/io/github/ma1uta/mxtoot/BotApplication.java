@@ -37,13 +37,22 @@ import io.github.ma1uta.mxtoot.matrix.MxTootDao;
 import io.github.ma1uta.mxtoot.matrix.MxTootPersistentService;
 import io.github.ma1uta.mxtoot.matrix.MxTootTransaction;
 import io.github.ma1uta.mxtoot.matrix.MxTootTransactionDao;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.security.cert.X509Certificate;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.ws.rs.client.Client;
 
 /**
  * Matrix bot.
  */
 public class BotApplication extends Application<BotConfiguration> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(BotApplication.class);
 
     private HibernateBundle<BotConfiguration> matrixHibernate = new HibernateBundle<BotConfiguration>(MxTootConfig.class,
         MxTootTransaction.class) {
@@ -65,6 +74,9 @@ public class BotApplication extends Application<BotConfiguration> {
 
     @Override
     public void run(BotConfiguration botConfiguration, Environment environment) {
+        if (botConfiguration.isDisableCertValidation()) {
+            disableCertValidation();
+        }
         matrixBot(botConfiguration, environment);
     }
 
@@ -101,5 +113,28 @@ public class BotApplication extends Application<BotConfiguration> {
                 new AppResource(mxTootTransactionDao, mxTootBotPool, botConfiguration.getHsToken(), botConfiguration.getHomeserverUrl(),
                     botService, transactionService));
         environment.jersey().register(new ExceptionHandler());
+    }
+
+    protected void disableCertValidation() {
+        try {
+            TrustManager[] trustAllCerts = new TrustManager[] {new X509TrustManager() {
+                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                    return null;
+                }
+
+                public void checkClientTrusted(X509Certificate[] certs, String authType) {
+                }
+
+                public void checkServerTrusted(X509Certificate[] certs, String authType) {
+                }
+            } };
+
+            SSLContext sc = SSLContext.getInstance("SSL");
+            sc.init(null, trustAllCerts, new java.security.SecureRandom());
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+        } catch (Exception e) {
+            LOGGER.error("Failed disable cert validation", e);
+            throw new Error(e);
+        }
     }
 }
