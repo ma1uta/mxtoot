@@ -16,7 +16,7 @@
 
 package io.github.ma1uta.mxtoot.matrix.command;
 
-import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException;
+import com.sys1yagi.mastodon4j.api.entity.Status;
 import com.sys1yagi.mastodon4j.api.method.Statuses;
 import io.github.ma1uta.matrix.Event;
 import io.github.ma1uta.matrix.bot.BotHolder;
@@ -72,12 +72,24 @@ public class Reply extends AbstractStatusCommand {
         String message = trimmed.substring(spaceIndex);
 
         try {
-            new Statuses(holder.getData().getMastodonClient()).postStatus(message, statusId, null, false, null).execute();
-        } catch (Mastodon4jRequestException e) {
-            LOGGER.error("Cannot toot", e);
-            eventMethods.sendNotice(roomId, "Cannot toot: " + e.getMessage());
+            Statuses statuses = new Statuses(holder.getData().getMastodonClient());
+            Status origin = statuses.getStatus(statusId).execute();
+            Status.Visibility visibility = visibilityByString(origin.getVisibility());
+            statuses.postStatus(message, statusId, null, false, null, visibility).execute();
+        } catch (Exception e) {
+            LOGGER.error("Cannot reply", e);
+            eventMethods.sendNotice(roomId, "Cannot reply: " + e.getMessage());
         }
         return true;
+    }
+
+    protected Status.Visibility visibilityByString(String visibility) {
+        for (Status.Visibility item : Status.Visibility.values()) {
+            if (item.getValue().equals(visibility)) {
+                return item;
+            }
+        }
+        return null;
     }
 
     @Override

@@ -16,6 +16,7 @@
 
 package io.github.ma1uta.mxtoot.matrix.command;
 
+import com.sys1yagi.mastodon4j.api.entity.Status;
 import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException;
 import com.sys1yagi.mastodon4j.api.method.Statuses;
 import io.github.ma1uta.matrix.Event;
@@ -29,42 +30,44 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Toot message.
+ * Base class to send messages.
  */
-public class Toot extends AbstractStatusCommand {
+public abstract class AbstractSendMessage extends AbstractStatusCommand {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Toot.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSendMessage.class);
 
     @Override
     public String name() {
-        return "toot";
+        return getVisibility().toString().toLowerCase();
     }
 
     @Override
     public boolean invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
-                       Event event, String arguments) {
+                          Event event, String arguments) {
         if (!initMastodonClient(holder)) {
             return false;
         }
 
         EventMethods eventMethods = holder.getMatrixClient().event();
         try {
-            new Statuses(holder.getData().getMastodonClient()).postStatus(arguments, null, null, false, null).execute();
+            new Statuses(holder.getData().getMastodonClient()).postStatus(arguments, null, null, false, null, getVisibility()).execute();
         } catch (Mastodon4jRequestException e) {
-            String msg = "Cannot toot";
+            String msg = "Cannot send " + name();
             LOGGER.error(msg, e);
             eventMethods.sendNotice(roomId, msg);
         }
         return true;
     }
 
+    protected abstract Status.Visibility getVisibility();
+
     @Override
     public String help() {
-        return "toot message";
+        return "Send " + name() + " message";
     }
 
     @Override
     public String usage() {
-        return "toot <message>";
+        return name() + " <message>";
     }
 }

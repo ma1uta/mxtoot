@@ -355,13 +355,25 @@ new messages.
 
 Possible value: `on`, `off`, `auto` (autorestart after application service's restart).
 
-### io.github.ma1uta.mxtoot.matrix.command.Toot
+### io.github.ma1uta.mxtoot.matrix.command.Public
 
-Post a new message to the Mastodon.
+Post a new public message to the Mastodon.
+
+### io.github.ma1uta.mxtoot.matrix.command.Private
+
+Post a new private message to the Mastodon.
+
+### io.github.ma1uta.mxtoot.matrix.command.Unlisted
+
+Post a new unlistedpublic message to the Mastodon.
+
+###### io.github.ma1uta.mxtoot.matrix.command.Direct
+
+Post a new direct message to the Mastodon.
 
 ### io.github.ma1uta.mxtoot.matrix.command.Reply
 
-Reply to the message from Mastodon.
+Reply to the message from Mastodon. The reply has the same visibility (public, private, unlisted, direct) as the origin.
 
 ### io.github.ma1uta.mxtoot.matrix.command.FetchStatuses
 

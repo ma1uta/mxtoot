@@ -13,7 +13,10 @@ commands:
   - io.github.ma1uta.mxtoot.matrix.command.RegisterMastodonClient
   - io.github.ma1uta.mxtoot.matrix.command.AuthorizeMastodonClient
   - io.github.ma1uta.mxtoot.matrix.command.Timeline
-  - io.github.ma1uta.mxtoot.matrix.command.Toot
+  - io.github.ma1uta.mxtoot.matrix.command.Public
+  - io.github.ma1uta.mxtoot.matrix.command.Unlisted
+  - io.github.ma1uta.mxtoot.matrix.command.Private
+  - io.github.ma1uta.mxtoot.matrix.command.Direct
   - io.github.ma1uta.mxtoot.matrix.command.Reply
   - io.github.ma1uta.mxtoot.matrix.command.FetchStatuses
   - io.github.ma1uta.mxtoot.matrix.command.Format
@@ -23,15 +26,15 @@ commands:
 runState: APPLICATION_SERVICE
 strictMode: false
 postFormat: >
-    <hr/>[{{id}}]: <a href="{{url}}">{{url}}</a>:<br/>
+    {{id}} ({{visibility}}): <a href="{{url}}">{{url}}</a>:<br/>
     {{account.acct}} at {{created_at}} wrote:<br/>
     {{content}}
 replyFormat: >
-    <hr/>[{{id}}]: <a href="{{url}}">{{url}}</a>:<br/>
+    {{id}} ({{visibility}}): <a href="{{url}}">{{url}}</a>:<br/>
     {{account.acct}} at {{created_at}} in reply to <a href="{{in_reply_to.url}}">{{in_reply_to.url}}</a> wrote:<br/>
     {{content}}
 boostFormat: >
-    <hr/>[{{id}}]: <a href="{{url}}">{{url}}</a>:<br/>
+    {{id}} ({{visibility}}): <a href="{{url}}">{{url}}</a>:<br/>
     {{account.acct}} boosted <a href="{{reblog.url}}">{{reblog.url}}</a>:<br/>
     {{reblog.account.acct}} at {{reblog.created_at}} wrote:<br/>
     {{content}}
