@@ -1,0 +1,17 @@
+[Unit]
+Description=Matrix <-> Mastodon bot
+Documentation=https://github.com/ma1uta/mxtoot
+After=network.target postgresql.service
+AssertPathExists=/home/mxtoot
+
+[Service]
+User=mxtoot
+WorkingDirectory=/home/mxtoot
+ExecStart=/usr/bin/java -Xmx100m -jar mxtoot.jar server mxtoot.yaml
+Restart=on-failure
+SuccessExitStatus=143
+ProtectSystem=strict
+ReadWritePaths=/home/mxtoot
+
+[Install]
+WantedBy=multi-user.target
