@@ -69,7 +69,7 @@ public class Streaming {
                     Response response = client.get("streaming/user", null);
                     if (!response.isSuccessful()) {
                         errorHandler.accept(response);
-                        throw new RuntimeException(new Mastodon4jRequestException(response));
+                        throw new Mastodon4jRequestException(response);
                     }
 
                     try (BufferedReader reader = new BufferedReader(new InputStreamReader(response.body().byteStream()))) {
@@ -111,7 +111,7 @@ public class Streaming {
                             break;
                         }
                     }
-                } catch (IOException e) {
+                } catch (IOException | Mastodon4jRequestException e) {
                     LOGGER.error("Cannot read line from streaming.", e);
                     if (!retryable) {
                         LOGGER.error("exit.");
