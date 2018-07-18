@@ -18,8 +18,7 @@ package io.github.ma1uta.mxtoot.matrix.command;
 
 import io.github.ma1uta.matrix.Event;
 import io.github.ma1uta.matrix.bot.BotHolder;
-import io.github.ma1uta.matrix.bot.Command;
-import io.github.ma1uta.matrix.client.MatrixClient;
+import io.github.ma1uta.matrix.bot.command.OwnerCommand;
 import io.github.ma1uta.mxtoot.mastodon.MxMastodonClient;
 import io.github.ma1uta.mxtoot.matrix.MxTootConfig;
 import io.github.ma1uta.mxtoot.matrix.MxTootDao;
@@ -30,7 +29,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Enable or disable fetch statuses.
  */
-public class FetchStatuses implements Command<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> {
+public class FetchStatuses extends OwnerCommand<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FetchStatuses.class);
 
@@ -40,21 +39,14 @@ public class FetchStatuses implements Command<MxTootConfig, MxTootDao, MxTootPer
     }
 
     @Override
-    public boolean invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
-                       Event event, String arguments) {
-        MxTootConfig config = holder.getConfig();
-        if (config.getOwner() != null && !config.getOwner().equals(event.getSender())) {
-            return false;
-        }
-
-        MatrixClient matrixClient = holder.getMatrixClient();
-
+    public boolean ownerInvoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder,
+                               String roomId, Event event, String arguments) {
         if (arguments == null || arguments.isEmpty()) {
-            matrixClient.event().sendNotice(roomId, "Usage: " + usage());
+            holder.getMatrixClient().event().sendNotice(roomId, "Usage: " + usage());
             return true;
         }
 
-        config.setFetchMissingStatuses(Boolean.parseBoolean(arguments.trim()));
+        holder.getConfig().setFetchMissingStatuses(Boolean.parseBoolean(arguments.trim()));
         return true;
     }
 

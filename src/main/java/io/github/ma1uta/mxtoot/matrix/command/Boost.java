@@ -42,7 +42,7 @@ public class Boost extends AbstractStatusCommand {
 
     @Override
     public boolean invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
-                       Event event, String arguments) {
+                          Event event, String arguments) {
         EventMethods eventMethods = holder.getMatrixClient().event();
 
         if (!initMastodonClient(holder)) {

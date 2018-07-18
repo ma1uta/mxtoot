@@ -24,7 +24,7 @@ import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException;
 import com.sys1yagi.mastodon4j.api.method.Apps;
 import io.github.ma1uta.matrix.Event;
 import io.github.ma1uta.matrix.bot.BotHolder;
-import io.github.ma1uta.matrix.bot.Command;
+import io.github.ma1uta.matrix.bot.command.OwnerCommand;
 import io.github.ma1uta.matrix.client.methods.EventMethods;
 import io.github.ma1uta.mxtoot.mastodon.MxMastodonClient;
 import io.github.ma1uta.mxtoot.matrix.MxTootConfig;
@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Register a new toot client.
  */
-public class RegisterMastodonClient implements Command<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> {
+public class RegisterMastodonClient extends OwnerCommand<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RegisterMastodonClient.class);
 
@@ -47,13 +47,9 @@ public class RegisterMastodonClient implements Command<MxTootConfig, MxTootDao, 
     }
 
     @Override
-    public boolean invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
-                       Event event, String arguments) {
+    public boolean ownerInvoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder,
+                               String roomId, Event event, String arguments) {
         MxTootConfig config = holder.getConfig();
-        if (config.getOwner() != null && !config.getOwner().equals(event.getSender())) {
-            return false;
-        }
-
         EventMethods eventMethods = holder.getMatrixClient().event();
 
         if (arguments == null || arguments.trim().isEmpty()) {

@@ -18,7 +18,7 @@ package io.github.ma1uta.mxtoot.matrix.command;
 
 import io.github.ma1uta.matrix.Event;
 import io.github.ma1uta.matrix.bot.BotHolder;
-import io.github.ma1uta.matrix.bot.Command;
+import io.github.ma1uta.matrix.bot.command.OwnerCommand;
 import io.github.ma1uta.matrix.client.MatrixClient;
 import io.github.ma1uta.matrix.client.methods.EventMethods;
 import io.github.ma1uta.mxtoot.mastodon.MxMastodonClient;
@@ -36,7 +36,7 @@ import java.util.Locale;
 /**
  * Show or fetch templates of the posts, boosts, replies, datetime or datetime locale.
  */
-public class Format implements Command<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> {
+public class Format extends OwnerCommand<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Format.class);
 
@@ -46,13 +46,9 @@ public class Format implements Command<MxTootConfig, MxTootDao, MxTootPersistent
     }
 
     @Override
-    public boolean invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
-                       Event event, String arguments) {
+    public boolean ownerInvoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder,
+                               String roomId, Event event, String arguments) {
         MxTootConfig config = holder.getConfig();
-        if (config.getOwner() != null && !config.getOwner().equals(event.getSender())) {
-            return false;
-        }
-
         MatrixClient matrixClient = holder.getMatrixClient();
 
         if (arguments == null || arguments.isEmpty()) {

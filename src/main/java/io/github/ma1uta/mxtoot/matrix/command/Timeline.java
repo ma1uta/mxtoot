@@ -36,7 +36,7 @@ public class Timeline extends AbstractStatusCommand {
 
     @Override
     public boolean invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
-                       Event event, String arguments) {
+                          Event event, String arguments) {
         MxTootConfig config = holder.getConfig();
         if (config.getOwner() != null && !config.getOwner().equals(event.getSender())) {
             return false;
