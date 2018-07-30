@@ -18,7 +18,7 @@ package io.github.ma1uta.mxtoot.matrix;
 
 import io.dropwizard.lifecycle.Managed;
 import io.github.ma1uta.matrix.Id;
-import io.github.ma1uta.matrix.bot.AbstractBotPool;
+import io.github.ma1uta.matrix.bot.AbstractApplicationServiceBotPool;
 import io.github.ma1uta.matrix.bot.Bot;
 import io.github.ma1uta.matrix.bot.Command;
 import io.github.ma1uta.mxtoot.BotConfiguration;
@@ -34,7 +34,8 @@ import javax.ws.rs.client.Client;
 /**
  * Bot service.
  */
-public class MxTootBotPool extends AbstractBotPool<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> implements
+public class MxTootBotPool extends
+    AbstractApplicationServiceBotPool<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> implements
     Managed {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MxTootBotPool.class);
@@ -45,7 +46,7 @@ public class MxTootBotPool extends AbstractBotPool<MxTootConfig, MxTootDao, MxTo
                          List<Class<? extends Command<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>,
                              MxMastodonClient>>> cmds) {
         super(botConfiguration.getHomeserverUrl(), botConfiguration.getDisplayName(), client,
-            botConfiguration.getAsToken(), service, cmds, botConfiguration.getRunState());
+            botConfiguration.getAsToken(), service, cmds);
         this.botConfiguration = botConfiguration;
     }
 
