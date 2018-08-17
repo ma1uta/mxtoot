@@ -46,6 +46,18 @@ boostFormat: >
     {{account.acct}} boosted <a href="{{reblog.url}}">{{reblog.url}}</a>:<br/>
     {{reblog.account.acct}} at {{reblog.created_at}} wrote:<br/>
     {{content}}
+mentionFormat: >
+    {{id}} {{account.acct}} mentioned you at {{created_at}}<br/>
+    {{status.id}} ({{status.visibility}}): <a href="{{status.url}}">{{status.url}}</a>:<br/>
+    {{status.account.acct}} at {{status.created_at}} wrote:<br/>
+    {{status.content}}
+followFormat: >
+    {{id}} {{account.acct}} followed you<br/>
+    {{account.url}}
+favouriteFormat: >
+    {{id}} {{account.acct}} favourited your status:<br/>
+    {{status.id}} ({{status.visibility}}): <a href="{{status.url}}">{{status.url}}</a>:<br/>
+    {{status.content}}
 dateTimeFormat: "MMM dd, yyyy, hh:mm"
 dateTimeLocale: "en"
 receiptPolicy: EXECUTED

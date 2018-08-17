@@ -66,6 +66,9 @@ public class MxMastodonClient implements Handler, Supplier<Void> {
     private Template postTemplate;
     private Template replyTemplate;
     private Template boostTemplate;
+    private Template mentionTemplate;
+    private Template favouriteTemplate;
+    private Template followTemplate;
 
     public MxMastodonClient(MastodonClient mastodonClient,
                             BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder) {
@@ -111,6 +114,30 @@ public class MxMastodonClient implements Handler, Supplier<Void> {
 
     public void setReplyTemplate(Template replyTemplate) {
         this.replyTemplate = replyTemplate;
+    }
+
+    public Template getMentionTemplate() {
+        return mentionTemplate;
+    }
+
+    public void setMentionTemplate(Template mentionTemplate) {
+        this.mentionTemplate = mentionTemplate;
+    }
+
+    public Template getFavouriteTemplate() {
+        return favouriteTemplate;
+    }
+
+    public void setFavouriteTemplate(Template favouriteTemplate) {
+        this.favouriteTemplate = favouriteTemplate;
+    }
+
+    public Template getFollowTemplate() {
+        return followTemplate;
+    }
+
+    public void setFollowTemplate(Template followTemplate) {
+        this.followTemplate = followTemplate;
     }
 
     public BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> getHolder() {
@@ -165,24 +192,89 @@ public class MxMastodonClient implements Handler, Supplier<Void> {
 
     @Override
     public void onStatus(Status status) {
-        getHolder().runInTransaction((holder, dao) -> {
+        writeMessage(writeStatus(status));
+    }
 
+    @Override
+    public void onNotification(Notification notification) {
+        Template template;
+        switch (notification.getType()) {
+            case "mention":
+                template = mention();
+                break;
+            case "reblog":
+                template = reblog();
+                break;
+            case "favourite":
+                template = favourite();
+                break;
+            case "follow":
+                template = follow();
+                break;
+            default:
+                writeMessage(String.format("Unknown notification: %s at [%s]: %d", notification.getType(), notification.getCreatedAt(),
+                    notification.getId()));
+                return;
+        }
+
+        Map<String, Object> notificationMap = new HashMap<>();
+        notificationMap.put("id", notification.getId());
+        notificationMap.put("created_at", notification.getCreatedAt());
+        notificationMap.put("account", accountToMap(notification.getAccount()));
+        notificationMap.put("status", statusToMap(notification.getStatus(), true));
+        notificationMap.put("type", notification.getType());
+
+        String message = formatTemplate(template, notificationMap);
+
+        writeMessage(message);
+    }
+
+    protected void writeMessage(String message) {
+        getHolder().runInTransaction((holder, dao) -> {
             MatrixClient matrixClient = holder.getMatrixClient();
-            String message = writeStatus(status);
             try {
-                matrixClient.room().joinedRooms().forEach(roomId -> {
-                    matrixClient.event().sendFormattedNotice(roomId, Jsoup.parse(message).text(), message);
-                    holder.setConfig(dao.save(holder.getConfig()));
-                });
+                matrixClient.room().joinedRooms()
+                    .forEach(roomId -> matrixClient.event().sendFormattedNotice(roomId, Jsoup.parse(message).text(), message));
             } catch (RuntimeException e) {
                 LOGGER.error("Failed write a message", e);
             }
         });
     }
 
-    @Override
-    public void onNotification(Notification notification) {
+    private Template mention() {
+        MxTootConfig config = getHolder().getConfig();
+        MxMastodonClient mastodonClient = getHolder().getData();
+        if (mastodonClient.getMentionTemplate() == null) {
+            mastodonClient.setMentionTemplate(compileTemplate(config.getMentionFormat()));
+        }
+        return mastodonClient.getMentionTemplate();
+    }
 
+    private Template reblog() {
+        MxTootConfig config = getHolder().getConfig();
+        MxMastodonClient mastodonClient = getHolder().getData();
+        if (mastodonClient.getBoostTemplate() == null) {
+            mastodonClient.setBoostTemplate(compileTemplate(config.getBoostFormat()));
+        }
+        return mastodonClient.getBoostTemplate();
+    }
+
+    private Template favourite() {
+        MxTootConfig config = getHolder().getConfig();
+        MxMastodonClient mastodonClient = getHolder().getData();
+        if (mastodonClient.getFavouriteTemplate() == null) {
+            mastodonClient.setFavouriteTemplate(compileTemplate(config.getFavouriteFormat()));
+        }
+        return mastodonClient.getFavouriteTemplate();
+    }
+
+    private Template follow() {
+        MxTootConfig config = getHolder().getConfig();
+        MxMastodonClient mastodonClient = getHolder().getData();
+        if (mastodonClient.getFollowTemplate() == null) {
+            mastodonClient.setFollowTemplate(compileTemplate(config.getFollowFormat()));
+        }
+        return mastodonClient.getFollowTemplate();
     }
 
     /**
@@ -234,6 +326,10 @@ public class MxMastodonClient implements Handler, Supplier<Void> {
             }
         }
 
+        return formatTemplate(template, statusMap);
+    }
+
+    protected String formatTemplate(Template template, Map<String, Object> statusMap) {
         try {
             return template.execute(statusMap);
         } catch (MustacheException e) {

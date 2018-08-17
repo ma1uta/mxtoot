@@ -108,6 +108,24 @@ public class MxTootConfig extends BotConfig {
     @Column(name = "fetch_statuses")
     private Boolean fetchMissingStatuses;
 
+    /**
+     * Format of the mention message.
+     */
+    @Column(name = "mstdn_mention_format")
+    private String mentionFormat;
+
+    /**
+     * Format of the favourite message.
+     */
+    @Column(name = "mstdn_favourite_format")
+    private String favouriteFormat;
+
+    /**
+     * Format of the follow format.
+     */
+    @Column(name = "mstdn_follow_format")
+    private String followFormat;
+
     public String getMastodonServer() {
         return mastodonServer;
     }
@@ -202,6 +220,30 @@ public class MxTootConfig extends BotConfig {
 
     public void setDateTimeLocale(String dateTimeLocale) {
         this.dateTimeLocale = dateTimeLocale;
+    }
+
+    public String getMentionFormat() {
+        return mentionFormat;
+    }
+
+    public void setMentionFormat(String mentionFormat) {
+        this.mentionFormat = mentionFormat;
+    }
+
+    public String getFavouriteFormat() {
+        return favouriteFormat;
+    }
+
+    public void setFavouriteFormat(String favouriteFormat) {
+        this.favouriteFormat = favouriteFormat;
+    }
+
+    public String getFollowFormat() {
+        return followFormat;
+    }
+
+    public void setFollowFormat(String followFormat) {
+        this.followFormat = followFormat;
     }
 
     @Override

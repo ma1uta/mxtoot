@@ -73,7 +73,7 @@ public class Format extends OwnerCommand<MxTootConfig, MxTootDao, MxTootPersiste
 
     @Override
     public String usage() {
-        return "format [post|reply|boost|datetime|locale] [<template or datetime format or locale>]";
+        return "format [post|reply|boost|datetime|locale|favourite|follow|mention] [<template or datetime format or locale>]";
     }
 
     protected void showTemplate(String templateName, MxTootConfig config, MatrixClient matrixClient, String roomId) {
@@ -94,6 +94,15 @@ public class Format extends OwnerCommand<MxTootConfig, MxTootDao, MxTootPersiste
             case "locale":
                 event.sendNotice(roomId, config.getDateTimeLocale());
                 break;
+            case "favourite":
+                event.sendNotice(roomId, config.getFavouriteFormat());
+                break;
+            case "follow":
+                event.sendNotice(roomId, config.getFollowFormat());
+                break;
+            case "mention":
+                event.sendNotice(roomId, config.getMentionFormat());
+                break;
             default:
                 event.sendNotice(roomId, "Unknown template name: " + templateName);
         }
@@ -113,6 +122,18 @@ public class Format extends OwnerCommand<MxTootConfig, MxTootDao, MxTootPersiste
             case "boost":
                 config.setBoostFormat(template);
                 mastodonClient.setBoostTemplate(null);
+                break;
+            case "favourite":
+                config.setFavouriteFormat(template);
+                mastodonClient.setFavouriteTemplate(null);
+                break;
+            case "follow":
+                config.setFollowFormat(template);
+                mastodonClient.setFollowTemplate(null);
+                break;
+            case "mention":
+                config.setMentionFormat(template);
+                mastodonClient.setMentionTemplate(null);
                 break;
             case "datetime":
                 try {

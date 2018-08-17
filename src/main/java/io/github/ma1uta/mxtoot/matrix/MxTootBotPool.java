@@ -73,6 +73,9 @@ public class MxTootBotPool extends
         config.setBoostFormat(getBotConfiguration().getBoostFormat());
         config.setDateTimeFormat(getBotConfiguration().getDateTimeFormat());
         config.setDateTimeLocale(getBotConfiguration().getDateTimeLocale());
+        config.setMentionFormat(getBotConfiguration().getMentionFormat());
+        config.setFollowFormat(getBotConfiguration().getFollowFormat());
+        config.setFavouriteFormat(getBotConfiguration().getFavouriteFormat());
         config.setFetchMissingStatuses(getBotConfiguration().getFetchMissingStatuses());
         config.setPrefix(getBotConfiguration().getPrefix());
 

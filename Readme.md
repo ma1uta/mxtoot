@@ -149,8 +149,11 @@ When strictMode is disabled it will skip event's validations and all unknown fie
 ### postFormat
 ### replyFormat
 ### boostFormat
+### mentionFormat
+### favouriteFormat
+### followFormat
 
-Initial template of the post, reply and boost messages which come from Mastodon. To create messages uses
+Initial template of the post, reply, boost, mention, favourite and follow messages which come from Mastodon. To create messages uses
 [jmustache](https://github.com/samskivert/jmustache) library, it is another java implementation 
 of the logic-less templating engine [mustache](https://mustache.github.io/).
 
@@ -167,6 +170,16 @@ So, portFormat describe how display general toots from the Mastodon, replyFormat
 boostFormat - boost/reblog messages.
 
 Available placeholders:
+
+#### Notification
+
+| Attribute    | Description                                                           | Nullable |
+| ------------ | --------------------------------------------------------------------- | -------- |
+| `id`         | The notification ID                                                   | no       |
+| `type`       | One of: "mention", "reblog", "favourite", "follow"                    | no       |
+| `created_at` | The time the notification was created                                 | no       |
+| `account`    | The [Account](#account) sending the notification to the user          | no       |
+| `status`     | The [Status](#status) associated with the notification, if applicable | yes      |
 
 #### Status
 | Attribute                | Description                                                                   | Nullable |

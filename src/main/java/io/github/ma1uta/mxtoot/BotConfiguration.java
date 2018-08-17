@@ -88,6 +88,18 @@ public class BotConfiguration extends Configuration {
     @NotNull
     private String dateTimeLocale;
 
+    @NotEmpty
+    @NotNull
+    private String mentionFormat;
+
+    @NotEmpty
+    @NotNull
+    private String followFormat;
+
+    @NotEmpty
+    @NotNull
+    private String favouriteFormat;
+
     private Boolean fetchMissingStatuses;
 
     @NotNull
@@ -216,6 +228,33 @@ public class BotConfiguration extends Configuration {
 
     public void setDateTimeLocale(String dateTimeLocale) {
         this.dateTimeLocale = dateTimeLocale;
+    }
+
+    @NotNull
+    public String getMentionFormat() {
+        return mentionFormat;
+    }
+
+    public void setMentionFormat(@NotNull String mentionFormat) {
+        this.mentionFormat = mentionFormat;
+    }
+
+    @NotNull
+    public String getFollowFormat() {
+        return followFormat;
+    }
+
+    public void setFollowFormat(@NotNull String followFormat) {
+        this.followFormat = followFormat;
+    }
+
+    @NotNull
+    public String getFavouriteFormat() {
+        return favouriteFormat;
+    }
+
+    public void setFavouriteFormat(@NotNull String favouriteFormat) {
+        this.favouriteFormat = favouriteFormat;
     }
 
     public Boolean getFetchMissingStatuses() {
