@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Boost.
  */
-public class Status extends AbstractStatusCommand {
+public class Status implements StatusCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Status.class);
 
@@ -46,7 +46,7 @@ public class Status extends AbstractStatusCommand {
                           Event event, String arguments) {
         EventMethods eventMethods = holder.getMatrixClient().event();
 
-        if (!initMastodonClient(holder)) {
+        if (!StatusCommand.initMastodonClient(holder)) {
             return false;
         }
 
@@ -54,7 +54,7 @@ public class Status extends AbstractStatusCommand {
             eventMethods.sendNotice(roomId, "Usage: " + usage());
             return true;
         }
-        Long statusId;
+        long statusId;
         try {
             statusId = Long.parseLong(arguments.trim());
         } catch (NumberFormatException e) {

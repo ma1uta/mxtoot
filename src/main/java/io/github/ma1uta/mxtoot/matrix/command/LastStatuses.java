@@ -37,7 +37,7 @@ import java.util.Queue;
 /**
  * Boost.
  */
-public class LastStatuses extends AbstractStatusCommand {
+public class LastStatuses implements StatusCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LastStatuses.class);
 
@@ -53,7 +53,7 @@ public class LastStatuses extends AbstractStatusCommand {
                           Event event, String arguments) {
         EventMethods eventMethods = holder.getMatrixClient().event();
 
-        if (!initMastodonClient(holder)) {
+        if (!StatusCommand.initMastodonClient(holder)) {
             return false;
         }
 

@@ -23,7 +23,7 @@ import io.github.ma1uta.matrix.bot.Bot;
 import io.github.ma1uta.matrix.bot.Command;
 import io.github.ma1uta.mxtoot.BotConfiguration;
 import io.github.ma1uta.mxtoot.mastodon.MxMastodonClient;
-import io.github.ma1uta.mxtoot.matrix.command.AbstractStatusCommand;
+import io.github.ma1uta.mxtoot.matrix.command.StatusCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,7 +85,7 @@ public class MxTootBotPool extends
             if (TimelineState.AUTO.equals(holder.getConfig().getTimelineState())) {
                 List<String> joinedRooms = holder.getMatrixClient().room().joinedRooms();
                 joinedRooms.forEach(roomId -> {
-                    if (!AbstractStatusCommand.initMastodonClient(holder)) {
+                    if (!StatusCommand.initMastodonClient(holder)) {
                         holder.getMatrixClient().event()
                             .sendNotice(roomId, "Client isn't initialized, start registration via !reg command.");
                     }

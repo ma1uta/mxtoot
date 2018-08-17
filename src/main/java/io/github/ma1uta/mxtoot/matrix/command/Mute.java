@@ -16,14 +16,33 @@
 
 package io.github.ma1uta.mxtoot.matrix.command;
 
-import com.sys1yagi.mastodon4j.api.entity.Status;
+import com.sys1yagi.mastodon4j.api.entity.Account;
+import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException;
+import com.sys1yagi.mastodon4j.api.method.Accounts;
 
 /**
- * Send unlisted message.
+ * Mute.
  */
-public class Unlisted extends SendMessage {
+public class Mute extends NotNullAction {
 
-    protected Status.Visibility getVisibility() {
-        return Status.Visibility.Unlisted;
+    @Override
+    public String name() {
+        return "mute";
+    }
+
+    @Override
+    public String help() {
+        return "mute somebody";
+    }
+
+    @Override
+    public String usage() {
+        return "mute <user_id>";
+    }
+
+    @Override
+    protected String action(Accounts accounts, Account account, String arguments) throws Mastodon4jRequestException {
+        accounts.postMute(account.getId()).execute();
+        return null;
     }
 }

@@ -32,9 +32,9 @@ import org.slf4j.LoggerFactory;
 /**
  * Base class to send messages.
  */
-public abstract class AbstractSendMessage extends AbstractStatusCommand {
+public abstract class SendMessage implements StatusCommand {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSendMessage.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SendMessage.class);
 
     @Override
     public String name() {
@@ -44,7 +44,7 @@ public abstract class AbstractSendMessage extends AbstractStatusCommand {
     @Override
     public boolean invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
                           Event event, String arguments) {
-        if (!initMastodonClient(holder)) {
+        if (!StatusCommand.initMastodonClient(holder)) {
             return false;
         }
 

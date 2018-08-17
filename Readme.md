@@ -388,20 +388,44 @@ Set or show post, reply or boost message templates.
 
 Boost(reblog) message.
 
+### io.github.ma1uta.mxtoot.matrix.command.Follow
+
+Follow to somebody.
+
+### io.github.ma1uta.mxtoot.matrix.command.Unfollow
+
+Unfollow.
+
+### io.github.ma1uta.mxtoot.matrix.command.Mute
+
+Mute somebody.
+
+### io.github.ma1uta.mxtoot.matrix.command.Unmute
+
+Unmute.
+
+### io.github.ma1uta.mxtoot.matrix.command.Block
+
+Block somebody.
+
+### io.github.ma1uta.mxtoot.matrix.command.Unblock
+
+Unblock.
+
+### io.github.ma1uta.mxtoot.matrix.command.Followers
+
+Show followers of the specified user id.
+
+### io.github.ma1uta.mxtoot.matrix.command.Following
+
+Show followings of the specified user id.
+
 ## Compile
 
 To build you need jdk 8 (oracle or openjdk) and apache maven 3.5.2 or higher.
 
-1. clone repository `git clone https://github.com/ma1uta/jeon`
-2. `cd jeon`
-3. compile and install core libraries `mvn clean install`
-4. `cd ..`
-5. clone repository `git clone https://github.com/ma1uta/jmsdk`
-6. `cd jmsdk`
-7. compile and install sdk library `mvn clean install`
-8. `cd ..`
-9. clone repository `git clone https://gitlab.com/ma1uta/mxtoot`
-10. `cd mxtoot`
-11. build common modules and mxtoot `mvn clean package`
+1. clone repository `git clone https://gitlab.com/ma1uta/mxtoot`
+2. `cd mxtoot`
+3. build common modules and mxtoot `mvn clean package`
 
 Don't hesitate to contact me in the #mxtoot:matrix.org room. :-)

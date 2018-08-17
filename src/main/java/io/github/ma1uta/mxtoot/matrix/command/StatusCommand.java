@@ -29,8 +29,7 @@ import okhttp3.OkHttpClient;
 /**
  * Common parent of the status commands with Mastodon client initialization.
  */
-public abstract class AbstractStatusCommand implements
-    Command<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> {
+public interface StatusCommand extends Command<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> {
 
     /**
      * Initialize mastodon client.
@@ -38,7 +37,7 @@ public abstract class AbstractStatusCommand implements
      * @param holder dot's holder.
      * @return {@code true} if the initialization was succeed else {@code false}.
      */
-    public static boolean initMastodonClient(
+    static boolean initMastodonClient(
         BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder) {
         if (holder.getData() == null) {
             if (holder.getConfig().getMastodonAccessToken() == null || holder.getConfig().getMastodonAccessToken().trim().isEmpty()) {

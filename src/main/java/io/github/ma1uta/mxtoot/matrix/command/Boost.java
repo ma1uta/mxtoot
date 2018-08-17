@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Boost.
  */
-public class Boost extends AbstractStatusCommand {
+public class Boost implements StatusCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Boost.class);
 
@@ -45,7 +45,7 @@ public class Boost extends AbstractStatusCommand {
                           Event event, String arguments) {
         EventMethods eventMethods = holder.getMatrixClient().event();
 
-        if (!initMastodonClient(holder)) {
+        if (!StatusCommand.initMastodonClient(holder)) {
             return false;
         }
 
@@ -56,7 +56,7 @@ public class Boost extends AbstractStatusCommand {
 
         String trimmed = arguments.trim();
 
-        Long statusId;
+        long statusId;
         try {
             statusId = Long.parseLong(trimmed);
         } catch (NumberFormatException e) {

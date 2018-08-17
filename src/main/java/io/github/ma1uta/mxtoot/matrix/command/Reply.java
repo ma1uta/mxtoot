@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Reply.
  */
-public class Reply extends AbstractStatusCommand {
+public class Reply implements StatusCommand {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Reply.class);
 
@@ -45,7 +45,7 @@ public class Reply extends AbstractStatusCommand {
                           Event event, String arguments) {
         EventMethods eventMethods = holder.getMatrixClient().event();
 
-        if (!initMastodonClient(holder)) {
+        if (!StatusCommand.initMastodonClient(holder)) {
             return false;
         }
 

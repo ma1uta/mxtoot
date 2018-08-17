@@ -21,7 +21,7 @@ import com.sys1yagi.mastodon4j.api.entity.Status;
 /**
  * Send private message.
  */
-public class Private extends AbstractSendMessage {
+public class Private extends SendMessage {
 
     protected Status.Visibility getVisibility() {
         return Status.Visibility.Private;

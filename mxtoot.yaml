@@ -23,6 +23,14 @@ commands:
   - io.github.ma1uta.mxtoot.matrix.command.Boost
   - io.github.ma1uta.mxtoot.matrix.command.LastStatuses
   - io.github.ma1uta.mxtoot.matrix.command.Status
+  - io.github.ma1uta.mxtoot.matrix.command.Block
+  - io.github.ma1uta.mxtoot.matrix.command.Unblock
+  - io.github.ma1uta.mxtoot.matrix.command.Follow
+  - io.github.ma1uta.mxtoot.matrix.command.Unfollow
+  - io.github.ma1uta.mxtoot.matrix.command.Mute
+  - io.github.ma1uta.mxtoot.matrix.command.Unmute
+  - io.github.ma1uta.mxtoot.matrix.command.Followers
+  - io.github.ma1uta.mxtoot.matrix.command.Following
 runState: APPLICATION_SERVICE
 strictMode: false
 postFormat: >
@@ -68,13 +76,12 @@ database:
   properties:
     charSet: UTF-8
     hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate.hbm2ddl.auto: "update"
   maxWaitForConnection: 1s
   validationQuery: "/* MyApplication Health Check */ SELECT 1"
   minSize: 8
   maxSize: 32
   checkConnectionWhileIdle: false
-  properties:
-    hibernate.hbm2ddl.auto: "update"
 
 server:
   applicationConnectors:

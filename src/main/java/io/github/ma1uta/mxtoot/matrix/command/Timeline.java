@@ -28,7 +28,8 @@ import io.github.ma1uta.mxtoot.matrix.TimelineState;
 /**
  * Run mastodon timeline.
  */
-public class Timeline extends AbstractStatusCommand {
+public class Timeline implements StatusCommand {
+
     @Override
     public String name() {
         return "timeline";
@@ -49,7 +50,7 @@ public class Timeline extends AbstractStatusCommand {
             TimelineState clientState = TimelineState.valueOf(arguments.trim().toUpperCase());
             config.setTimelineState(clientState);
 
-            initMastodonClient(holder);
+            StatusCommand.initMastodonClient(holder);
 
             switch (clientState) {
                 case ON:

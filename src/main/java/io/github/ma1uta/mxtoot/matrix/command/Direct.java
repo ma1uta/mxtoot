@@ -21,7 +21,7 @@ import com.sys1yagi.mastodon4j.api.entity.Status;
 /**
  * Send direct message.
  */
-public class Direct extends AbstractSendMessage {
+public class Direct extends SendMessage {
 
     protected Status.Visibility getVisibility() {
         return Status.Visibility.Direct;
