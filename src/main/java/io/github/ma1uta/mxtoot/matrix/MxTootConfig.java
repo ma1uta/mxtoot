@@ -25,6 +25,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 
 /**
  * Matrix bot persistent configuration.
@@ -75,19 +76,22 @@ public class MxTootConfig extends BotConfig {
     /**
      * Format of the regular posts.
      */
-    @Column(name = "mstdn_post_format")
+    @Column(name = "mstdn_post_format", length = 4000)
+    @Size(max = 4000)
     private String postFormat;
 
     /**
      * Format of the reply.
      */
-    @Column(name = "mstdn_reply_format")
+    @Column(name = "mstdn_reply_format", length = 4000)
+    @Size(max = 4000)
     private String replyFormat;
 
     /**
      * Format of the boost message.
      */
-    @Column(name = "mstdn_boost_format")
+    @Column(name = "mstdn_boost_format", length = 4000)
+    @Size(max = 4000)
     private String boostFormat;
 
     /**
@@ -111,19 +115,22 @@ public class MxTootConfig extends BotConfig {
     /**
      * Format of the mention message.
      */
-    @Column(name = "mstdn_mention_format")
+    @Column(name = "mstdn_mention_format", length = 4000)
+    @Size(max = 4000)
     private String mentionFormat;
 
     /**
      * Format of the favourite message.
      */
-    @Column(name = "mstdn_favourite_format")
+    @Column(name = "mstdn_favourite_format", length = 4000)
+    @Size(max = 4000)
     private String favouriteFormat;
 
     /**
      * Format of the follow format.
      */
-    @Column(name = "mstdn_follow_format")
+    @Column(name = "mstdn_follow_format", length = 4000)
+    @Size(max = 4000)
     private String followFormat;
 
     public String getMastodonServer() {
