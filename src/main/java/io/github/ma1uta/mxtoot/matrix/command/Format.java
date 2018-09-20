@@ -17,7 +17,7 @@
 package io.github.ma1uta.mxtoot.matrix.command;
 
 import io.github.ma1uta.matrix.Event;
-import io.github.ma1uta.matrix.bot.BotHolder;
+import io.github.ma1uta.matrix.bot.Context;
 import io.github.ma1uta.matrix.bot.command.OwnerCommand;
 import io.github.ma1uta.matrix.client.MatrixClient;
 import io.github.ma1uta.matrix.client.methods.EventMethods;
@@ -46,7 +46,7 @@ public class Format extends OwnerCommand<MxTootConfig, MxTootDao, MxTootPersiste
     }
 
     @Override
-    public boolean ownerInvoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder,
+    public boolean ownerInvoke(Context<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder,
                                String roomId, Event event, String arguments) {
         MxTootConfig config = holder.getConfig();
         MatrixClient matrixClient = holder.getMatrixClient();

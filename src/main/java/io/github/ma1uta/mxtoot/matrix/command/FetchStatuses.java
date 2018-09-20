@@ -17,7 +17,7 @@
 package io.github.ma1uta.mxtoot.matrix.command;
 
 import io.github.ma1uta.matrix.Event;
-import io.github.ma1uta.matrix.bot.BotHolder;
+import io.github.ma1uta.matrix.bot.Context;
 import io.github.ma1uta.matrix.bot.command.OwnerCommand;
 import io.github.ma1uta.mxtoot.mastodon.MxMastodonClient;
 import io.github.ma1uta.mxtoot.matrix.MxTootConfig;
@@ -39,7 +39,7 @@ public class FetchStatuses extends OwnerCommand<MxTootConfig, MxTootDao, MxTootP
     }
 
     @Override
-    public boolean ownerInvoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder,
+    public boolean ownerInvoke(Context<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder,
                                String roomId, Event event, String arguments) {
         if (arguments == null || arguments.isEmpty()) {
             holder.getMatrixClient().event().sendNotice(roomId, "Usage: " + usage());

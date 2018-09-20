@@ -18,8 +18,8 @@ package io.github.ma1uta.mxtoot.matrix.command;
 
 import com.google.gson.Gson;
 import com.sys1yagi.mastodon4j.MastodonClient;
-import io.github.ma1uta.matrix.bot.BotHolder;
 import io.github.ma1uta.matrix.bot.Command;
+import io.github.ma1uta.matrix.bot.Context;
 import io.github.ma1uta.mxtoot.mastodon.MxMastodonClient;
 import io.github.ma1uta.mxtoot.matrix.MxTootConfig;
 import io.github.ma1uta.mxtoot.matrix.MxTootDao;
@@ -38,7 +38,7 @@ public interface StatusCommand extends Command<MxTootConfig, MxTootDao, MxTootPe
      * @return {@code true} if the initialization was succeed else {@code false}.
      */
     static boolean initMastodonClient(
-        BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder) {
+        Context<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder) {
         if (holder.getData() == null) {
             if (holder.getConfig().getMastodonAccessToken() == null || holder.getConfig().getMastodonAccessToken().trim().isEmpty()) {
                 return false;

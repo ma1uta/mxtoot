@@ -19,6 +19,7 @@ package io.github.ma1uta.mxtoot;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import io.dropwizard.Application;
 import io.dropwizard.client.JerseyClientBuilder;
 import io.dropwizard.configuration.EnvironmentVariableSubstitutor;
@@ -29,7 +30,7 @@ import io.dropwizard.hibernate.UnitOfWorkAwareProxyFactory;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import io.dropwizard.sslreload.SslReloadBundle;
-import io.github.ma1uta.jeon.exception.ExceptionHandler;
+import io.github.ma1uta.matrix.exception.ExceptionHandler;
 import io.github.ma1uta.mxtoot.matrix.AppResource;
 import io.github.ma1uta.mxtoot.matrix.MxTootBotPool;
 import io.github.ma1uta.mxtoot.matrix.MxTootConfig;
@@ -37,6 +38,7 @@ import io.github.ma1uta.mxtoot.matrix.MxTootDao;
 import io.github.ma1uta.mxtoot.matrix.MxTootPersistentService;
 import io.github.ma1uta.mxtoot.matrix.MxTootTransaction;
 import io.github.ma1uta.mxtoot.matrix.MxTootTransactionDao;
+import io.github.ma1uta.mxtoot.matrix.OldAppResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,6 +97,7 @@ public class BotApplication extends Application<BotConfiguration> {
     private void matrixBot(BotConfiguration botConfiguration, Environment environment) {
         environment.getObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
         environment.getObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, botConfiguration.isStrictMode());
+        environment.getObjectMapper().configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 
         Client jersey = new JerseyClientBuilder(environment).using(botConfiguration.getJerseyClient()).build("jersey");
 
@@ -108,10 +111,11 @@ public class BotApplication extends Application<BotConfiguration> {
         MxTootBotPool mxTootBotPool = new MxTootBotPool(botConfiguration, botService, jersey, botConfiguration.getCommands());
 
         environment.lifecycle().manage(mxTootBotPool);
-        environment.jersey()
-            .register(
-                new AppResource(mxTootTransactionDao, mxTootBotPool, botConfiguration.getHsToken(), botConfiguration.getHomeserverUrl(),
-                    botService, transactionService));
+        AppResource appResource = new AppResource(mxTootTransactionDao, mxTootBotPool, botConfiguration.getHsToken(),
+            botConfiguration.getHomeserverUrl(),
+            botService, transactionService);
+        environment.jersey().register(appResource);
+        environment.jersey().register(new OldAppResource(appResource));
         environment.jersey().register(new ExceptionHandler());
     }
 

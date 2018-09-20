@@ -17,7 +17,7 @@
 package io.github.ma1uta.mxtoot.matrix.command;
 
 import io.github.ma1uta.matrix.Event;
-import io.github.ma1uta.matrix.bot.BotHolder;
+import io.github.ma1uta.matrix.bot.Context;
 import io.github.ma1uta.matrix.client.methods.EventMethods;
 import io.github.ma1uta.mxtoot.mastodon.MxMastodonClient;
 import io.github.ma1uta.mxtoot.matrix.MxTootConfig;
@@ -36,31 +36,31 @@ public class Timeline implements StatusCommand {
     }
 
     @Override
-    public boolean invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
+    public boolean invoke(Context<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> context, String roomId,
                           Event event, String arguments) {
-        MxTootConfig config = holder.getConfig();
+        MxTootConfig config = context.getConfig();
         if (config.getOwner() != null && !config.getOwner().equals(event.getSender())) {
             return false;
         }
 
-        EventMethods eventMethods = holder.getMatrixClient().event();
+        EventMethods eventMethods = context.getMatrixClient().event();
         if (arguments == null || arguments.trim().isEmpty()) {
             eventMethods.sendNotice(roomId, "Usage: " + help());
         } else {
             TimelineState clientState = TimelineState.valueOf(arguments.trim().toUpperCase());
             config.setTimelineState(clientState);
 
-            StatusCommand.initMastodonClient(holder);
+            StatusCommand.initMastodonClient(context);
 
             switch (clientState) {
                 case ON:
                 case AUTO:
-                    if (!holder.getData().streaming()) {
+                    if (!context.getData().streaming()) {
                         eventMethods.sendNotice(roomId, "Cannot streaming");
                     }
                     break;
                 case OFF:
-                    holder.getData().get();
+                    context.getData().get();
                     break;
                 default:
                     eventMethods.sendNotice(roomId, "Unknown status " + clientState);

@@ -20,7 +20,7 @@ import com.sys1yagi.mastodon4j.api.entity.Status;
 import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException;
 import com.sys1yagi.mastodon4j.api.method.Statuses;
 import io.github.ma1uta.matrix.Event;
-import io.github.ma1uta.matrix.bot.BotHolder;
+import io.github.ma1uta.matrix.bot.Context;
 import io.github.ma1uta.matrix.client.methods.EventMethods;
 import io.github.ma1uta.mxtoot.mastodon.MxMastodonClient;
 import io.github.ma1uta.mxtoot.matrix.MxTootConfig;
@@ -42,15 +42,15 @@ public abstract class SendMessage implements StatusCommand {
     }
 
     @Override
-    public boolean invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
+    public boolean invoke(Context<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> context, String roomId,
                           Event event, String arguments) {
-        if (!StatusCommand.initMastodonClient(holder)) {
+        if (!StatusCommand.initMastodonClient(context)) {
             return false;
         }
 
-        EventMethods eventMethods = holder.getMatrixClient().event();
+        EventMethods eventMethods = context.getMatrixClient().event();
         try {
-            new Statuses(holder.getData().getMastodonClient()).postStatus(arguments, null, null, false, null, getVisibility()).execute();
+            new Statuses(context.getData().getMastodonClient()).postStatus(arguments, null, null, false, null, getVisibility()).execute();
         } catch (Mastodon4jRequestException e) {
             String msg = "Cannot send " + name();
             LOGGER.error(msg, e);

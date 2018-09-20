@@ -33,7 +33,7 @@ import com.sys1yagi.mastodon4j.api.entity.Tag;
 import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException;
 import com.sys1yagi.mastodon4j.api.method.Accounts;
 import com.sys1yagi.mastodon4j.api.method.Statuses;
-import io.github.ma1uta.matrix.bot.BotHolder;
+import io.github.ma1uta.matrix.bot.Context;
 import io.github.ma1uta.matrix.client.MatrixClient;
 import io.github.ma1uta.mxtoot.matrix.MxTootConfig;
 import io.github.ma1uta.mxtoot.matrix.MxTootDao;
@@ -59,7 +59,7 @@ public class MxMastodonClient implements Handler, Supplier<Void> {
     private static final Logger LOGGER = LoggerFactory.getLogger(MxMastodonClient.class);
 
     private final MastodonClient mastodonClient;
-    private final BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder;
+    private final Context<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder;
     private Shutdownable shutdownable;
     private boolean running = false;
     private DateTimeFormatter dateTimeFormatter;
@@ -71,7 +71,7 @@ public class MxMastodonClient implements Handler, Supplier<Void> {
     private Template followTemplate;
 
     public MxMastodonClient(MastodonClient mastodonClient,
-                            BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder) {
+                            Context<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder) {
         this.mastodonClient = mastodonClient;
         this.holder = holder;
     }
@@ -140,7 +140,7 @@ public class MxMastodonClient implements Handler, Supplier<Void> {
         this.followTemplate = followTemplate;
     }
 
-    public BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> getHolder() {
+    public Context<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> getHolder() {
         return holder;
     }
 
@@ -161,7 +161,7 @@ public class MxMastodonClient implements Handler, Supplier<Void> {
             this.shutdownable = new Streaming(getMastodonClient(), true,
                 response -> {
                     MatrixClient matrixClient = getHolder().getMatrixClient();
-                    matrixClient.room().joinedRooms()
+                    matrixClient.room().joinedRooms().join()
                         .forEach(roomId -> matrixClient.event().sendNotice(roomId, "Failed start streaming: " + response.message()));
                 }).user(this);
             this.running = true;
@@ -221,7 +221,9 @@ public class MxMastodonClient implements Handler, Supplier<Void> {
         notificationMap.put("id", notification.getId());
         notificationMap.put("created_at", notification.getCreatedAt());
         notificationMap.put("account", accountToMap(notification.getAccount()));
-        notificationMap.put("status", statusToMap(notification.getStatus(), true));
+        if (notification.getStatus() != null) {
+            notificationMap.put("status", statusToMap(notification.getStatus(), true));
+        }
         notificationMap.put("type", notification.getType());
 
         String message = formatTemplate(template, notificationMap);
@@ -233,7 +235,7 @@ public class MxMastodonClient implements Handler, Supplier<Void> {
         getHolder().runInTransaction((holder, dao) -> {
             MatrixClient matrixClient = holder.getMatrixClient();
             try {
-                matrixClient.room().joinedRooms()
+                matrixClient.room().joinedRooms().join()
                     .forEach(roomId -> matrixClient.event().sendFormattedNotice(roomId, Jsoup.parse(message).text(), message));
             } catch (RuntimeException e) {
                 LOGGER.error("Failed write a message", e);

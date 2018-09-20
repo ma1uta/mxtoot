@@ -20,7 +20,7 @@ import com.sys1yagi.mastodon4j.api.entity.Account;
 import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException;
 import com.sys1yagi.mastodon4j.api.method.Accounts;
 import io.github.ma1uta.matrix.Event;
-import io.github.ma1uta.matrix.bot.BotHolder;
+import io.github.ma1uta.matrix.bot.Context;
 import io.github.ma1uta.matrix.bot.command.OwnerCommand;
 import io.github.ma1uta.matrix.client.methods.EventMethods;
 import io.github.ma1uta.mxtoot.mastodon.MxMastodonClient;
@@ -46,10 +46,10 @@ public abstract class AbstractSubscribers extends
     protected abstract String action(Accounts accounts, Account account, String arguments) throws Mastodon4jRequestException;
 
     protected abstract Pair<Boolean, String> checkArgument(
-        BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String arguments);
+        Context<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String arguments);
 
     @Override
-    protected boolean ownerInvoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder,
+    protected boolean ownerInvoke(Context<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder,
                                   String roomId, Event event, String arguments) {
         if (!StatusCommand.initMastodonClient(holder)) {
             return false;

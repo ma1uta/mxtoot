@@ -23,7 +23,7 @@ import com.sys1yagi.mastodon4j.api.entity.auth.AppRegistration;
 import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException;
 import com.sys1yagi.mastodon4j.api.method.Apps;
 import io.github.ma1uta.matrix.Event;
-import io.github.ma1uta.matrix.bot.BotHolder;
+import io.github.ma1uta.matrix.bot.Context;
 import io.github.ma1uta.matrix.bot.command.OwnerCommand;
 import io.github.ma1uta.matrix.client.methods.EventMethods;
 import io.github.ma1uta.mxtoot.mastodon.MxMastodonClient;
@@ -47,7 +47,7 @@ public class RegisterMastodonClient extends OwnerCommand<MxTootConfig, MxTootDao
     }
 
     @Override
-    public boolean ownerInvoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder,
+    public boolean ownerInvoke(Context<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder,
                                String roomId, Event event, String arguments) {
         MxTootConfig config = holder.getConfig();
         EventMethods eventMethods = holder.getMatrixClient().event();

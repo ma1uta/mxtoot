@@ -86,7 +86,7 @@ public class MxTootBotPool extends
     protected void initializeBot(Bot<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> bot) {
         bot.setInitAction((holder, dao) -> {
             if (TimelineState.AUTO.equals(holder.getConfig().getTimelineState())) {
-                List<String> joinedRooms = holder.getMatrixClient().room().joinedRooms();
+                List<String> joinedRooms = holder.getMatrixClient().room().joinedRooms().join();
                 joinedRooms.forEach(roomId -> {
                     if (!StatusCommand.initMastodonClient(holder)) {
                         holder.getMatrixClient().event()

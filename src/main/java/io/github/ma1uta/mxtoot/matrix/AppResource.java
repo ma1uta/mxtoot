@@ -16,19 +16,23 @@
 
 package io.github.ma1uta.mxtoot.matrix;
 
-import io.github.ma1uta.jeon.exception.MatrixException;
 import io.github.ma1uta.matrix.EmptyResponse;
 import io.github.ma1uta.matrix.ErrorResponse;
 import io.github.ma1uta.matrix.application.api.ApplicationApi;
 import io.github.ma1uta.matrix.application.model.TransactionRequest;
+import io.github.ma1uta.matrix.exception.MatrixException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.container.AsyncResponse;
+import javax.ws.rs.container.Suspended;
+import javax.ws.rs.core.Response;
 
 /**
  * Application REST service.
@@ -80,47 +84,51 @@ public class AppResource implements ApplicationApi {
     }
 
     @Override
-    public EmptyResponse transaction(String txnId, TransactionRequest request, HttpServletRequest servletRequest,
-                                     HttpServletResponse servletResponse) {
+    public void transaction(String txnId, TransactionRequest request, HttpServletRequest servletRequest,
+                            AsyncResponse asyncResponse) {
         LOGGER.debug("Receive transaction {}", txnId);
         validateAsToken(servletRequest);
 
-        if (!getTransactionService().invoke(dao -> {
-            return dao.exist(txnId);
-        })) {
-            Optional<Boolean> result = request.getEvents().stream().map(event -> getMxTootBotPool().send(event.getRoomId(), event))
-                .filter(Boolean::booleanValue).findAny();
-            if (result.isPresent() && result.get()) {
-                getTransactionService().invoke((dao) -> {
-                    MxTootTransaction transaction = new MxTootTransaction();
-                    transaction.setId(txnId);
-                    transaction.setProcessed(LocalDateTime.now());
-                    getMxTootTransactionDao().save(transaction);
-                });
-            } else {
-                LOGGER.warn("Bot not found");
+        CompletableFuture.runAsync(() -> {
+            if (!getTransactionService().invoke(dao -> {
+                return dao.exist(txnId);
+            })) {
+                Optional<Boolean> result = request.getEvents().stream().map(event -> getMxTootBotPool().send(event.getRoomId(), event))
+                    .filter(Boolean::booleanValue).findAny();
+                if (result.isPresent() && result.get()) {
+                    getTransactionService().invoke((dao) -> {
+                        MxTootTransaction transaction = new MxTootTransaction();
+                        transaction.setId(txnId);
+                        transaction.setProcessed(LocalDateTime.now());
+                        getMxTootTransactionDao().save(transaction);
+                    });
+                } else {
+                    LOGGER.warn("Bot not found");
+                }
             }
-        }
-
-        return new EmptyResponse();
+            asyncResponse.resume(Response.ok(new EmptyResponse()));
+        });
     }
 
     @Override
-    public EmptyResponse rooms(String roomAlias, HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
-        throw new MatrixException(getUrl().toUpperCase() + "_NOT_FOUND", "", HttpServletResponse.SC_NOT_FOUND);
+    public void rooms(String roomAlias, HttpServletRequest servletRequest, @Suspended AsyncResponse asyncResponse) {
+        asyncResponse.resume(new MatrixException(getUrl().toUpperCase() + "_NOT_FOUND", "", HttpServletResponse.SC_NOT_FOUND));
     }
 
     @Override
-    public EmptyResponse users(String userId, HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
+    public void users(String userId, HttpServletRequest servletRequest, @Suspended AsyncResponse asyncResponse) {
         validateAsToken(servletRequest);
-        if (getBotService().invoke((dao) -> {
-            return dao.user(userId);
-        })) {
-            throw new MatrixException(ErrorResponse.Code.M_USER_IN_USE, "User has been already registred", HttpServletResponse.SC_CONFLICT);
-        } else {
-            getMxTootBotPool().startNewBot(userId);
-            return new EmptyResponse();
-        }
+        CompletableFuture.runAsync(() -> {
+            if (getBotService().invoke((dao) -> {
+                return dao.user(userId);
+            })) {
+                asyncResponse.resume(Response.status(Response.Status.CONFLICT)
+                    .entity(new ErrorResponse(ErrorResponse.Code.M_USER_IN_USE, "User has been already registred")));
+            } else {
+                getMxTootBotPool().startNewBot(userId);
+                asyncResponse.resume(Response.ok(new EmptyResponse()));
+            }
+        });
     }
 
     protected void validateAsToken(HttpServletRequest servletRequest) {

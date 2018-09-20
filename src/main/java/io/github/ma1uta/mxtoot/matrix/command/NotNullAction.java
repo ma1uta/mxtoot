@@ -16,7 +16,7 @@
 
 package io.github.ma1uta.mxtoot.matrix.command;
 
-import io.github.ma1uta.matrix.bot.BotHolder;
+import io.github.ma1uta.matrix.bot.Context;
 import io.github.ma1uta.mxtoot.mastodon.MxMastodonClient;
 import io.github.ma1uta.mxtoot.matrix.MxTootConfig;
 import io.github.ma1uta.mxtoot.matrix.MxTootDao;
@@ -31,7 +31,7 @@ public abstract class NotNullAction extends AbstractSubscribers {
 
     @Override
     protected Pair<Boolean, String> checkArgument(
-        BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String arguments) {
+        Context<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String arguments) {
         return StringUtils.isBlank(arguments) ? Pair.of(false, "Usage: " + usage()) : Pair.of(true, arguments);
     }
 }

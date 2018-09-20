@@ -21,7 +21,7 @@ import com.sys1yagi.mastodon4j.api.entity.Status;
 import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException;
 import com.sys1yagi.mastodon4j.api.method.Timelines;
 import io.github.ma1uta.matrix.Event;
-import io.github.ma1uta.matrix.bot.BotHolder;
+import io.github.ma1uta.matrix.bot.Context;
 import io.github.ma1uta.matrix.client.methods.EventMethods;
 import io.github.ma1uta.mxtoot.mastodon.MxMastodonClient;
 import io.github.ma1uta.mxtoot.matrix.MxTootConfig;
@@ -49,11 +49,11 @@ public class LastStatuses implements StatusCommand {
     }
 
     @Override
-    public boolean invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
+    public boolean invoke(Context<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> context, String roomId,
                           Event event, String arguments) {
-        EventMethods eventMethods = holder.getMatrixClient().event();
+        EventMethods eventMethods = context.getMatrixClient().event();
 
-        if (!StatusCommand.initMastodonClient(holder)) {
+        if (!StatusCommand.initMastodonClient(context)) {
             return false;
         }
 
@@ -69,7 +69,7 @@ public class LastStatuses implements StatusCommand {
         }
 
         try {
-            Timelines timelines = new Timelines(holder.getData().getMastodonClient());
+            Timelines timelines = new Timelines(context.getData().getMastodonClient());
             long lastStatusId = Long.MAX_VALUE;
             Queue<Status> statusQueue = new ArrayDeque<>();
             for (int i = 0; i < last; i++) {
@@ -79,7 +79,7 @@ public class LastStatuses implements StatusCommand {
                 Status status = statusQueue.poll();
                 if (status != null) {
                     lastStatusId = status.getId();
-                    String message = holder.getData().writeStatus(status);
+                    String message = context.getData().writeStatus(status);
                     eventMethods.sendFormattedNotice(roomId, Jsoup.parse(message).text(), message);
                 }
             }

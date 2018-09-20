@@ -19,7 +19,7 @@ package io.github.ma1uta.mxtoot.matrix.command;
 import com.sys1yagi.mastodon4j.api.exception.Mastodon4jRequestException;
 import com.sys1yagi.mastodon4j.api.method.Statuses;
 import io.github.ma1uta.matrix.Event;
-import io.github.ma1uta.matrix.bot.BotHolder;
+import io.github.ma1uta.matrix.bot.Context;
 import io.github.ma1uta.matrix.client.methods.EventMethods;
 import io.github.ma1uta.mxtoot.mastodon.MxMastodonClient;
 import io.github.ma1uta.mxtoot.matrix.MxTootConfig;
@@ -42,11 +42,11 @@ public class Status implements StatusCommand {
     }
 
     @Override
-    public boolean invoke(BotHolder<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> holder, String roomId,
+    public boolean invoke(Context<MxTootConfig, MxTootDao, MxTootPersistentService<MxTootDao>, MxMastodonClient> context, String roomId,
                           Event event, String arguments) {
-        EventMethods eventMethods = holder.getMatrixClient().event();
+        EventMethods eventMethods = context.getMatrixClient().event();
 
-        if (!StatusCommand.initMastodonClient(holder)) {
+        if (!StatusCommand.initMastodonClient(context)) {
             return false;
         }
 
@@ -64,7 +64,7 @@ public class Status implements StatusCommand {
         }
 
         try {
-            MxMastodonClient mastodonClient = holder.getData();
+            MxMastodonClient mastodonClient = context.getData();
             com.sys1yagi.mastodon4j.api.entity.Status status = new Statuses(mastodonClient.getMastodonClient()).getStatus(statusId)
                 .execute();
             String message = mastodonClient.writeStatus(status);
